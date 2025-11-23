@@ -23,7 +23,7 @@ public class Movie {
         this.genre=genre;
         this.director=director;
         this.duration=duration;
-        this.isShowing=isShowing;
+       // this.isShowing=isShowing;
     }
     public String getId(){return id;}
     public void setId(String id){this.id=id;}

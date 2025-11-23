@@ -10,7 +10,7 @@ public class Customer {
     private String cusName;
     private String cusPhone;
     private String cusEmail;
-
+    private int cusPoint;
     public Customer() {}
 
     public Customer(String cusID, String cusName, String cusPhone, String cusEmail) {
@@ -18,8 +18,11 @@ public class Customer {
         this.cusName = cusName;
         this.cusPhone = cusPhone;
         this.cusEmail = cusEmail;
+        this.cusPoint=0;
     }
-
+    public void addPoint(Invoice inv){
+       cusPoint+=(int)(inv.getTotal()/1000);
+    }
     public String getCusID() {
         return cusID;
     }
@@ -51,6 +54,14 @@ public class Customer {
     public void setCusEmail(String cusEmail) {
         this.cusEmail = cusEmail;
     }
+    
+    public int getCusPoint() {
+        return cusPoint;
+    }
+
+    public void setCusPoint(int cusPoint) {
+        this.cusPoint = cusPoint;
+    }    
 
     @Override
     public String toString() {

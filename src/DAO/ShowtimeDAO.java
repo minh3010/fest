@@ -6,8 +6,10 @@ import entity.Room;
 import entity.Showtime;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class ShowtimeDAO {
     private final MovieDAO movieDAO;
@@ -70,6 +72,19 @@ public class ShowtimeDAO {
         }
         return showtimes;
     }
+    public List<Showtime> getShowtimesByDate(Date date) throws SQLException, ClassNotFoundException {
+        List<Showtime> showtimes = new ArrayList<>();
+        String sql = "select show_id,s.mov_id,s.theater_id,theater_name,show_date,start_time,show_price from showtime s "
+                + "join movie m on s.Mov_ID=m.mov_id join theater t on s.Theater_ID=t.Theater_ID where show_date=?";
+        try (PreparedStatement pst = getConnect().prepareStatement(sql)) {
+            pst.setDate(1,date);   
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+               showtimes.add(extractShowTime(rs));
+            }
+        }
+        return showtimes;
+    }    
     public List<Showtime> getShowtimesByMovieId(String movieId) throws SQLException, ClassNotFoundException {
         List<Showtime> showtimes = new ArrayList<>();
         String sql = "select show_id,s.mov_id,theater_id,show_date,start_time,show_price from showtime s join movie m on s.Mov_ID=m.mov_id where s.Mov_ID=?";
@@ -94,7 +109,7 @@ public class ShowtimeDAO {
         }
         return null;
     }
-    public Optional<Showtime> getShowtimeByDate(String showDate) throws SQLException, ClassNotFoundException {
+    public Optional<Showtime> getShowtimeByStartTime(String showDate) throws SQLException, ClassNotFoundException {
         String sql = "select * from showtime s join theater t on s.Theater_ID=t.Theater_ID where start_time=?";
         try (PreparedStatement pst = getConnect().prepareStatement(sql)) {
             pst.setString(1, showDate);
@@ -104,6 +119,26 @@ public class ShowtimeDAO {
             }
         }
         return null;
+    }
+    public void bookSeat(String showtimeId, String seatNumber) throws SQLException, ClassNotFoundException {
+        String sql = "INSERT INTO showtime_booked_seats (show_id, seat_num) VALUES (?, ?)";
+        try (PreparedStatement stmt = getConnect().prepareStatement(sql)) {
+            stmt.setString(1, showtimeId);
+            stmt.setString(2, seatNumber);
+            stmt.executeUpdate();
+        }
+    }
+    public Set<String> getBookedSeats(String showTimeId) throws SQLException, ClassNotFoundException {
+        Set<String> bookedSeats = new HashSet<>();
+        String sql = "SELECT seat_num FROM showtime_booked_seats WHERE show_id=?";
+        try (PreparedStatement pst = getConnect().prepareStatement(sql)) {
+            pst.setString(1, showTimeId);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                bookedSeats.add(rs.getString("seat_num"));
+            }
+        }
+        return bookedSeats;
     }    
     private Showtime extractShowTime(ResultSet rs) throws SQLException, ClassNotFoundException {
         String movieId = rs.getString("mov_id");
@@ -113,7 +148,7 @@ public class ShowtimeDAO {
         Optional<Room> roomOpt = roomDAO.findById(roomId);
         
         if (!movieOpt.isPresent() || !roomOpt.isPresent()) {
-            throw new SQLException("Movie or Room not found for ShowTime");
+            throw new SQLException("không tồn tại phim hoặc phòng");
         }
         
         Showtime showTime = new Showtime(
@@ -124,7 +159,10 @@ public class ShowtimeDAO {
             rs.getTime("start_time").toLocalTime(),
             rs.getDouble("show_price")
         );
-       
+        Set<String> bookedSeats = getBookedSeats(showTime.getId());
+        for (String seat : bookedSeats) {
+            showTime.bookSeat(seat);
+        }       
         return showTime;
     }
 }

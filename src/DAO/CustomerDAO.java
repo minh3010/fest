@@ -9,6 +9,7 @@ import entity.Customer;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.swing.JOptionPane;
 
 public class CustomerDAO {
@@ -71,7 +72,20 @@ public class CustomerDAO {
             return false;
         }
     }
+    public boolean updatePoint(Customer c) throws SQLException, ClassNotFoundException {
+        String sql = "UPDATE Customer SET Cus_point=? WHERE Cus_ID=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
+            ps.setInt(1, c.getCusPoint());
+            ps.setString(2, c.getCusID());
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Lỗi cập nhật điểm: " + e.getMessage());
+            return false;
+        }
+    }    
     public boolean deleteCustomer(String cusID) throws SQLException, ClassNotFoundException {
         String sql = "DELETE FROM Customer WHERE Cus_ID=?";
         try (Connection conn = getConnection();
@@ -85,7 +99,18 @@ public class CustomerDAO {
             return false;
         }
     }
-
+    public Optional<Customer> findByPhone(String phone) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT * FROM customer WHERE cus_phone=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, phone);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return Optional.of(extractCustomer(rs));
+            }
+        }
+        return Optional.empty();
+    }    
     public List<Customer> searchByPhone(String keyword) throws SQLException, ClassNotFoundException {
         List<Customer> list = new ArrayList<>();
         String sql = "SELECT * FROM Customer WHERE Cus_phone LIKE ?";
@@ -109,4 +134,14 @@ public class CustomerDAO {
         }
         return list;
     }
+    private Customer extractCustomer(ResultSet rs) throws SQLException {
+        Customer customer = new Customer(
+            rs.getString("cus_id"),
+            rs.getString("cus_name"),
+            rs.getString("cus_phone"),
+            rs.getString("cus_email")
+        );
+        customer.setCusPoint(rs.getInt("cus_point"));
+        return customer;
+    }    
 }

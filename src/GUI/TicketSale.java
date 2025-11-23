@@ -8,27 +8,39 @@ package GUI;
  *
  * @author Lenovo
  */
-import entity.Movie;
-import entity.Showtime;
-import DAO.MovieDAO;
-import DAO.ShowtimeDAO;
-import DAO.RoomDAO;
+import entity.*;
+import DAO.*;
 import cinema.Database;
-import entity.Room;
 import java.awt.Color;
 import java.awt.Component;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.awt.GridLayout;
+
 import java.util.List;
 import javax.swing.*;
+import javax.swing.table.*;
+import java.sql.*;
+import java.util.ArrayList;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableCellEditor;
+import javax.swing.JTable;
+//import javax.swing.table.TableColumn;
 public class TicketSale extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TicketSale.class.getName());
     private final ShowtimeDAO showtimeDAO;
     private final MovieDAO movieDAO;
     private final RoomDAO roomDAO;
+    private final CustomerDAO cusDAO;
+    private final InvoiceDAO invDAO;
+    private final ServiceDAO serDAO;
+    private final TicketDAO ticketDAO;
+    private Showtime selectedShowtime;
+    private Customer selectedCustomer;
+    private List<String>bookingSeat;
     private Color defaultcolor;
+    private SpinnerEditor editor;
     private Double ticketPrice=0.;
     private Double servicePrice=0.;
     private Double totalPrice=0.;
@@ -38,8 +50,14 @@ public class TicketSale extends javax.swing.JFrame {
     public TicketSale() {
         movieDAO=new MovieDAO();
         showtimeDAO=new ShowtimeDAO();
+        serDAO=new ServiceDAO();
         roomDAO=new RoomDAO();
+        cusDAO=new CustomerDAO();
+        ticketDAO=new TicketDAO();
+        invDAO=new InvoiceDAO();
+        bookingSeat=new ArrayList();
         initComponents();
+        
         loadMovie();
     }
 
@@ -53,7 +71,7 @@ public class TicketSale extends javax.swing.JFrame {
     private void initComponents() {
 
         SalePane = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
+        ticketPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         MovieComboBox = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
@@ -67,12 +85,39 @@ public class TicketSale extends javax.swing.JFrame {
         serviceLabel = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         totalLabel = new javax.swing.JLabel();
-        serviceBtn = new javax.swing.JButton();
+        ToServiceBtn = new javax.swing.JButton();
         cancelBtn = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
+        phoneNumField = new javax.swing.JTextField();
+        searchBtn = new javax.swing.JButton();
+        cusPanel = new javax.swing.JPanel(new GridLayout(4,2,5,5));
+        servicePanel = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblProduct = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        ToTicketBtn = new javax.swing.JButton();
+        ToInvoiceBtn = new javax.swing.JButton();
+        service2Label = new javax.swing.JLabel();
+        total2Label = new javax.swing.JLabel();
+        ticket2Label = new javax.swing.JLabel();
+        invoicePanel = new javax.swing.JPanel();
+        invIdLabel = new javax.swing.JLabel();
+        movieLabel = new javax.swing.JLabel();
+        showtimeLabel = new javax.swing.JLabel();
+        cusLabel = new javax.swing.JLabel();
+        seatLabel = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        serInvTable = new javax.swing.JTable();
+        jPanel5 = new javax.swing.JPanel();
+        ticket3Label = new javax.swing.JLabel();
+        service3Label = new javax.swing.JLabel();
+        total3Label = new javax.swing.JLabel();
+        toServiceBtn = new javax.swing.JButton();
+        confirmBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -99,7 +144,7 @@ public class TicketSale extends javax.swing.JFrame {
         seatPanel.setLayout(seatPanelLayout);
         seatPanelLayout.setHorizontalGroup(
             seatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 385, Short.MAX_VALUE)
+            .addGap(0, 365, Short.MAX_VALUE)
         );
         seatPanelLayout.setVerticalGroup(
             seatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -112,10 +157,10 @@ public class TicketSale extends javax.swing.JFrame {
 
         jLabel8.setText("Tổng tiền:");
 
-        serviceBtn.setText("Tiếp");
-        serviceBtn.addActionListener(new java.awt.event.ActionListener() {
+        ToServiceBtn.setText("Tiếp");
+        ToServiceBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serviceBtnActionPerformed(evt);
+                ToServiceBtnActionPerformed(evt);
             }
         });
 
@@ -126,133 +171,397 @@ public class TicketSale extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(68, 68, 68)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(roomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(MovieComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(41, 41, 41)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(ShowtimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2))))
-                        .addContainerGap(497, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(seatPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(47, 47, 47)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(cancelBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(serviceBtn)
-                                .addGap(31, 31, 31))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel6))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(serviceLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
-                                    .addComponent(ticketLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(totalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+        jLabel12.setText("Số điện thoại");
+
+        searchBtn.setText("Tìm kiếm");
+        searchBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchBtnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout cusPanelLayout = new javax.swing.GroupLayout(cusPanel);
+        cusPanel.setLayout(cusPanelLayout);
+        cusPanelLayout.setHorizontalGroup(
+            cusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        cusPanelLayout.setVerticalGroup(
+            cusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 172, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout ticketPanelLayout = new javax.swing.GroupLayout(ticketPanel);
+        ticketPanel.setLayout(ticketPanelLayout);
+        ticketPanelLayout.setHorizontalGroup(
+            ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ticketPanelLayout.createSequentialGroup()
+                .addGap(68, 68, 68)
+                .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(ticketPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(roomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(ticketPanelLayout.createSequentialGroup()
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(MovieComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(41, 41, 41)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(ShowtimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(29, 29, 29)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel12)
+                            .addComponent(phoneNumField, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(searchBtn)))
+                    .addComponent(seatPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(ticketPanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cusPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(ticketPanelLayout.createSequentialGroup()
+                        .addGap(29, 29, 29)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(ticketPanelLayout.createSequentialGroup()
+                                .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(ticketPanelLayout.createSequentialGroup()
+                                        .addComponent(jLabel6)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(serviceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(ticketPanelLayout.createSequentialGroup()
+                                        .addComponent(jLabel8)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(totalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 162, Short.MAX_VALUE))
+                            .addGroup(ticketPanelLayout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(ticketLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(ticketPanelLayout.createSequentialGroup()
+                        .addGap(52, 52, 52)
+                        .addComponent(cancelBtn)
+                        .addGap(58, 58, 58)
+                        .addComponent(ToServiceBtn)
+                        .addContainerGap())))
+        );
+        ticketPanelLayout.setVerticalGroup(
+            ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ticketPanelLayout.createSequentialGroup()
                 .addGap(36, 36, 36)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(MovieComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ShowtimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(41, 41, 41)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(roomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(ticketPanelLayout.createSequentialGroup()
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel12))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(MovieComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ShowtimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(phoneNumField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(searchBtn)
+                        .addGap(10, 10, 10)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(roomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(seatPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addContainerGap(21, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ticketPanelLayout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(cusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
                             .addComponent(ticketLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(serviceLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel8)
                             .addComponent(totalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(46, 46, 46)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(serviceBtn)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(ToServiceBtn)
                             .addComponent(cancelBtn))
                         .addGap(56, 56, 56))))
         );
 
-        SalePane.addTab("tab1", jPanel1);
+        SalePane.addTab("tab1", ticketPanel);
 
-        jLabel5.setText("Service");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(248, 248, 248)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(441, Short.MAX_VALUE))
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 717, Short.MAX_VALUE)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(121, 121, 121)
-                .addComponent(jLabel5)
-                .addContainerGap(268, Short.MAX_VALUE))
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 640, Short.MAX_VALUE)
         );
 
-        SalePane.addTab("tab2", jPanel2);
+        tblProduct.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
 
-        jLabel7.setText("Invoice");
+            },
+            new String [] {
+                "Mã", "Tên", "Giá", "Số lượng", "Cần mua"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, true
+            };
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(261, 261, 261)
-                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(441, Short.MAX_VALUE))
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tblProduct);
+
+        jLabel5.setText("Dịch vụ :");
+
+        jLabel10.setText("Giá vé: ");
+
+        jLabel11.setText("Tổng:");
+
+        ToTicketBtn.setText("Quay lại");
+        ToTicketBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ToTicketBtnActionPerformed(evt);
+            }
+        });
+
+        ToInvoiceBtn.setText("Tiếp");
+        ToInvoiceBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ToInvoiceBtnActionPerformed(evt);
+            }
+        });
+
+        service2Label.setText("0.");
+
+        total2Label.setText("0.");
+
+        ticket2Label.setText("0.");
+
+        javax.swing.GroupLayout servicePanelLayout = new javax.swing.GroupLayout(servicePanel);
+        servicePanel.setLayout(servicePanelLayout);
+        servicePanelLayout.setHorizontalGroup(
+            servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(servicePanelLayout.createSequentialGroup()
+                .addGroup(servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(servicePanelLayout.createSequentialGroup()
+                        .addGap(633, 633, 633)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(servicePanelLayout.createSequentialGroup()
+                        .addGap(44, 44, 44)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(servicePanelLayout.createSequentialGroup()
+                                .addComponent(ToTicketBtn)
+                                .addGap(75, 75, 75)
+                                .addComponent(ToInvoiceBtn))
+                            .addGroup(servicePanelLayout.createSequentialGroup()
+                                .addGap(150, 150, 150)
+                                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(servicePanelLayout.createSequentialGroup()
+                                .addGap(44, 44, 44)
+                                .addGroup(servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel11)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel10))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(total2Label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(ticket2Label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(service2Label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(116, 116, 116)
-                .addComponent(jLabel7)
-                .addContainerGap(273, Short.MAX_VALUE))
+        servicePanelLayout.setVerticalGroup(
+            servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(servicePanelLayout.createSequentialGroup()
+                .addGroup(servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(servicePanelLayout.createSequentialGroup()
+                        .addGap(63, 63, 63)
+                        .addComponent(jLabel9)
+                        .addGap(29, 29, 29)
+                        .addGroup(servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(ticket2Label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(service2Label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(total2Label))
+                        .addGap(102, 102, 102)
+                        .addGroup(servicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(ToTicketBtn)
+                            .addComponent(ToInvoiceBtn)))
+                    .addGroup(servicePanelLayout.createSequentialGroup()
+                        .addGap(47, 47, 47)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(105, 105, 105)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
-        SalePane.addTab("tab3", jPanel3);
+        SalePane.addTab("tab2", servicePanel);
+
+        invIdLabel.setText("Mã hóa đơn:");
+
+        movieLabel.setText("Tên phim:");
+
+        showtimeLabel.setText("Suất chiếu:");
+
+        cusLabel.setText("Khách hàng:");
+
+        seatLabel.setText("Ghế:");
+
+        serInvTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Mã", "Dịch vụ", "Giá tiền", "Số lượng", "Giá tổng"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Double.class, java.lang.Integer.class, java.lang.Double.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(serInvTable);
+
+        ticket3Label.setText("Giá vé:");
+
+        service3Label.setText("Giá dịch vụ:");
+
+        total3Label.setText("Thành tiền:");
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(total3Label)
+                    .addComponent(ticket3Label)
+                    .addComponent(service3Label))
+                .addContainerGap(93, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(ticket3Label)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(service3Label)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(total3Label)
+                .addContainerGap(28, Short.MAX_VALUE))
+        );
+
+        toServiceBtn.setText("Quay lại");
+        toServiceBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toServiceBtnActionPerformed(evt);
+            }
+        });
+
+        confirmBtn.setText("Xác nhận");
+        confirmBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                confirmBtnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout invoicePanelLayout = new javax.swing.GroupLayout(invoicePanel);
+        invoicePanel.setLayout(invoicePanelLayout);
+        invoicePanelLayout.setHorizontalGroup(
+            invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(invoicePanelLayout.createSequentialGroup()
+                .addGap(59, 59, 59)
+                .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(invoicePanelLayout.createSequentialGroup()
+                        .addGap(7, 7, 7)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(146, 146, 146)
+                        .addComponent(toServiceBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(60, 60, 60)
+                        .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(142, Short.MAX_VALUE))
+                    .addGroup(invoicePanelLayout.createSequentialGroup()
+                        .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(invIdLabel)
+                            .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(cusLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(movieLabel, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(showtimeLabel, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(seatLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(90, 90, 90))))
+        );
+        invoicePanelLayout.setVerticalGroup(
+            invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(invoicePanelLayout.createSequentialGroup()
+                .addGap(59, 59, 59)
+                .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(invoicePanelLayout.createSequentialGroup()
+                        .addComponent(invIdLabel)
+                        .addGap(12, 12, 12)
+                        .addComponent(cusLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(movieLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(showtimeLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(seatLabel)))
+                .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(invoicePanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(invoicePanelLayout.createSequentialGroup()
+                        .addGap(80, 80, 80)
+                        .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(toServiceBtn)
+                            .addComponent(confirmBtn))))
+                .addContainerGap(70, Short.MAX_VALUE))
+        );
+
+        SalePane.addTab("tab3", invoicePanel);
 
         getContentPane().add(SalePane, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, -40, 750, 440));
 
@@ -262,12 +571,13 @@ public class TicketSale extends javax.swing.JFrame {
     private void MovieComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MovieComboBoxActionPerformed
         try {
             String movieId = ((String) MovieComboBox.getSelectedItem()).split(" - ")[0];
+            bookingSeat.removeAll(bookingSeat);
             ShowtimeComboBox.removeAllItems();
             List<Showtime> showtimes = showtimeDAO.getShowtimesByMovieId(movieId);
             for (Showtime showtime : showtimes) {
                 ShowtimeComboBox.addItem(showtime.getStart_time() + " - " + showtime.getEnd_time());
             }
-            reset();
+            clear();
         } catch(SQLException | ClassNotFoundException ex){
             JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
         }        
@@ -279,7 +589,9 @@ public class TicketSale extends javax.swing.JFrame {
             if(selected==null){
                return;
             }
-            String showDate = ((String) selected).split(" - ")[0];   
+            bookingSeat.removeAll(bookingSeat);
+            String showDate = ((String) selected).split(" - ")[0];
+            selectedShowtime=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
             String sql = "select * from showtime s join theater t on s.Theater_ID=t.Theater_ID where start_time=?";
             PreparedStatement pst = Database.getDB().connect().prepareStatement(sql);
             pst.setString(1, showDate);
@@ -288,7 +600,7 @@ public class TicketSale extends javax.swing.JFrame {
                  roomLabel.setText(rs.getString("theater_id") + " - " + rs.getString("theater_name"));
             }
             getSeatTable();
-            reset();
+            clear();
         } catch(SQLException | ClassNotFoundException ex){
             JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
         }          
@@ -304,17 +616,149 @@ public class TicketSale extends javax.swing.JFrame {
       }
         MovieComboBox.setSelectedIndex(0);
         ShowtimeComboBox.setSelectedIndex(0);      
-        reset();
+        clear();
     }//GEN-LAST:event_cancelBtnActionPerformed
 
-    private void serviceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serviceBtnActionPerformed
-        if(totalPrice==0.){
+    private void ToServiceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ToServiceBtnActionPerformed
+        if(ticketPrice==0.){
             JOptionPane.showMessageDialog(this,"Hãy chọn ghế");
             return;
         }
+        else if(phoneNumField.getText().isEmpty()){
+            JOptionPane.showMessageDialog(this,"Hãy điền khách hàng");
+            return;
+        }
         SalePane.setSelectedIndex(1);
-    }//GEN-LAST:event_serviceBtnActionPerformed
+        ticket2Label.setText(String.valueOf(ticketPrice)); 
+        total2Label.setText(String.valueOf(totalPrice)); 
+        loadServiceToTable();
+    }//GEN-LAST:event_ToServiceBtnActionPerformed
 
+    private void ToTicketBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ToTicketBtnActionPerformed
+        SalePane.setSelectedIndex(0);
+        ticketLabel.setText(String.valueOf(ticketPrice));
+        serviceLabel.setText(String.valueOf(servicePrice));
+        totalLabel.setText(String.valueOf(totalPrice));         
+    }//GEN-LAST:event_ToTicketBtnActionPerformed
+
+    private void ToInvoiceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ToInvoiceBtnActionPerformed
+        SalePane.setSelectedIndex(2);
+        loadInvService();
+        StringBuilder sb = new StringBuilder();
+        for (String s : bookingSeat) {
+            if(bookingSeat.size()>1){
+             sb.append(s).append(" ");
+            }
+            else{
+             sb.append(s);
+            }
+        }   
+        try {
+            invIdLabel.setText("Mã hóa đơn:"+invDAO.generateId());
+        } catch (SQLException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
+        } 
+        cusLabel.setText("Khách hàng:"+selectedCustomer.getCusName());
+        movieLabel.setText("Tên phim:"+selectedShowtime.getMovie().getTitle());
+        showtimeLabel.setText("Suất chiếu:"+selectedShowtime.getStart_time()+"-"+selectedShowtime.getEnd_time());
+        seatLabel.setText("Ghế:"+sb.toString().trim());
+        ticket3Label.setText("Giá vé: "+String.valueOf(ticketPrice));
+        service3Label.setText("Giá dịch vụ: "+String.valueOf(servicePrice));
+        total3Label.setText("Thành tiền: "+String.valueOf(totalPrice));          
+    }//GEN-LAST:event_ToInvoiceBtnActionPerformed
+    private void createNewCustomer(){
+        JTextField cusId=new JTextField();
+        JTextField cusName=new JTextField();
+        JTextField cusPhone=new JTextField();
+        JTextField cusEmail=new JTextField();
+        JPanel cusPanel=new JPanel(new GridLayout(4,2,5,5));
+        cusPanel.add(new JLabel("Mã KH:"));
+        cusPanel.add(cusId);
+        cusPanel.add(new JLabel("Tên:"));
+        cusPanel.add(cusName);
+        cusPanel.add(new JLabel("Số đt:"));
+        cusPanel.add(cusPhone);
+        cusPanel.add(new JLabel("Email:"));
+        cusPanel.add(cusEmail);
+        int result = JOptionPane.showConfirmDialog(this, cusPanel, "Thêm khách hàng mới",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                Customer newCustomer = new Customer(
+                    cusId.getText().trim(),
+                    cusName.getText().trim(),
+                    cusPhone.getText().trim(),
+                    cusEmail.getText().trim()
+                );
+                cusDAO.insertCustomer(newCustomer);
+                selectedCustomer=newCustomer;
+                displayCus(newCustomer);
+                JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!");               
+                
+            } catch (SQLException | ClassNotFoundException e) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi thêm khách hàng: " + e.getMessage());
+            }
+        }        
+
+    }
+    private void displayCus(Customer cus){
+        cusPanel.removeAll();
+        cusPanel.setLayout(new java.awt.GridLayout(5,1,5,5));
+        cusPanel.add(new JLabel("Mã KH:"+cus.getCusID()));
+        cusPanel.add(new JLabel("Tên:"+cus.getCusName()));
+        cusPanel.add(new JLabel("Số đt:"+cus.getCusPhone()));
+        cusPanel.add(new JLabel("Email:"+cus.getCusEmail()));
+        cusPanel.add(new JLabel("Point:"+cus.getCusPoint()));
+        cusPanel.revalidate();
+        cusPanel.repaint();     
+    }
+    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
+        String phone=phoneNumField.getText().trim();
+        try{
+        Customer cus=cusDAO.findByPhone(phone).orElse(null);
+        if(cus==null){
+            createNewCustomer();
+            return;
+        }
+        selectedCustomer=cus;
+        displayCus(cus);
+        } catch(SQLException | ClassNotFoundException ex){
+           JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
+        } 
+    }//GEN-LAST:event_searchBtnActionPerformed
+
+    private void toServiceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toServiceBtnActionPerformed
+        SalePane.setSelectedIndex(1);
+    }//GEN-LAST:event_toServiceBtnActionPerformed
+
+    private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtnActionPerformed
+        try {
+            Invoice inv=new Invoice(invDAO.generateId(),selectedCustomer,ticketPrice,servicePrice);
+            invDAO.addInvoice(inv);
+            selectedCustomer.addPoint(inv);
+            cusDAO.updatePoint(selectedCustomer);
+            for(int i=0;i<serInvTable.getRowCount();i++){
+                String id=(String)serInvTable.getValueAt(i,0);
+                Service ser=serDAO.findById(id);
+                Double price=(double)serInvTable.getValueAt(i,2);
+                int quantity=(int)serInvTable.getValueAt(i,3);
+                InvoiceService invSer=new InvoiceService(inv,ser,price,quantity);
+                serDAO.updateQuantity(ser, quantity);
+                invDAO.addInvLine(invSer);
+            }
+            for(int i=0;i<bookingSeat.size();i++){
+                String seat=bookingSeat.get(i);
+                Ticket tic=new Ticket(ticketDAO.generateId(),inv,selectedShowtime,seat,selectedShowtime.getShow_price());
+                ticketDAO.addTicket(tic);
+                showtimeDAO.bookSeat(selectedShowtime.getId(),seat);
+            }
+            JOptionPane.showMessageDialog(this,"Tạo hóa đơn thành công");
+            reset();            
+        } catch (SQLException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
+        }       
+    }//GEN-LAST:event_confirmBtnActionPerformed
+    
     /**
      * @param args the command line arguments
      */
@@ -323,7 +767,7 @@ public class TicketSale extends javax.swing.JFrame {
         String showDate = ((String) ShowtimeComboBox.getSelectedItem()).split(" - ")[0];
         try {
             Room room=roomDAO.findById(roomId).orElse(null);
-            Showtime show=showtimeDAO.getShowtimeByDate(showDate).orElse(null);
+            Showtime show=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
             seatPanel.removeAll();
             seatPanel.setLayout(new java.awt.GridLayout(room.getRowNum(),room.getSeatPerRow(),5,5));
             for (int i = 0; i < room.getRowNum(); i++) {
@@ -354,9 +798,10 @@ public class TicketSale extends javax.swing.JFrame {
     private void pickSeat(javax.swing.JButton btn){
      try{   
       String showDate = ((String) ShowtimeComboBox.getSelectedItem()).split(" - ")[0];
-      Showtime show=showtimeDAO.getShowtimeByDate(showDate).orElse(null);
+      Showtime show=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
       if (btn.getBackground().equals(defaultcolor)) {
         btn.setBackground(Color.GREEN);
+        bookingSeat.add(btn.getText());
         ticketPrice+=show.getShow_price();
         totalPrice+=show.getShow_price();
         ticketLabel.setText(String.valueOf(ticketPrice));
@@ -365,6 +810,7 @@ public class TicketSale extends javax.swing.JFrame {
       }
       else if (btn.getBackground().equals(Color.GREEN)) {
         btn.setBackground(defaultcolor);
+        bookingSeat.remove(btn.getText());
         ticketPrice-=show.getShow_price();
         totalPrice-=show.getShow_price();
         ticketLabel.setText(String.valueOf(ticketPrice));     
@@ -377,11 +823,23 @@ public class TicketSale extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
         }
     }
-    private void reset(){
+    private void clear(){
         ticketPrice=0.;
+        servicePrice=0.;
         totalPrice=0.;
         ticketLabel.setText(String.valueOf(ticketPrice));
-        totalLabel.setText(String.valueOf(totalPrice));     
+        serviceLabel.setText(String.valueOf(servicePrice));
+        totalLabel.setText(String.valueOf(totalPrice));
+        phoneNumField.setText("");
+        cusPanel.removeAll();
+    }
+    private void reset(){
+        SalePane.setSelectedIndex(0);
+        MovieComboBox.setSelectedIndex(0);
+        ShowtimeComboBox.setSelectedIndex(0);          
+        editor.ResetSpinner();
+        getSeatTable();
+        clear();      
     }    
     private void loadMovie(){
         try {
@@ -394,6 +852,118 @@ public class TicketSale extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
         }
     }
+    private void loadInvService(){
+        DefaultTableModel model = (DefaultTableModel) serInvTable.getModel();
+        model.setRowCount(0);
+        for (int i = 0; i < tblProduct.getRowCount(); i++) { 
+              if(!tblProduct.getValueAt(i, 4).equals(0)){
+                  String id=(String)tblProduct.getValueAt(i, 0);
+                  String name=(String)tblProduct.getValueAt(i, 1);
+                  double price=(double)tblProduct.getValueAt(i, 2);
+                  int num=(int)tblProduct.getValueAt(i, 4);
+                  double total=price*num;
+                  model.addRow(new Object[]{id, name, price, num,total});
+              }
+        }        
+    }
+    private void loadServiceToTable() {
+    try {
+        Connection con = Database.getDB().connect();   
+        String sql = "SELECT * FROM Service";
+        PreparedStatement pst = con.prepareStatement(sql);
+        ResultSet rs = pst.executeQuery();
+
+        DefaultTableModel model = (DefaultTableModel) tblProduct.getModel();
+        model.setRowCount(0);
+
+        while (rs.next()) {
+            String ma   = rs.getString("Service_ID");
+            String ten  = rs.getString("Service_name");
+            double gia  = rs.getDouble("Service_price");
+            int num=rs.getInt("service_quantity");
+            model.addRow(new Object[]{ma, ten, gia, num,0});
+        }
+        editor=new SpinnerEditor(tblProduct);
+        TableColumn col = tblProduct.getColumnModel().getColumn(4);
+        col.setCellEditor(editor);
+        col.setCellRenderer(new SpinnerRenderer());
+        tblProduct.setRowHeight(35);                    
+        tblProduct.getColumnModel().getColumn(4).setPreferredWidth(100);         
+        rs.close();
+        pst.close();
+        con.close();
+
+    } catch (SQLException |ClassNotFoundException ex) {
+        JOptionPane.showMessageDialog(this, "Lỗi tải dịch vụ: " + ex.getMessage());
+    }
+}
+
+  public class SpinnerRenderer extends JSpinner implements TableCellRenderer {
+    public SpinnerRenderer() {
+        super(new SpinnerNumberModel(0, 0, 50, 1));
+        setOpaque(true);
+    }
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        setValue(value != null ? (Integer) value : 0);
+        if (isSelected) {
+            setBackground(table.getSelectionBackground());
+        } else {
+            setBackground(table.getBackground());
+        }
+        return this;
+    }
+  }    
+  public class SpinnerEditor extends AbstractCellEditor implements TableCellEditor {
+    private final JSpinner spinner;
+    private final JTable table;
+    private int currentRow;
+    public SpinnerEditor(JTable table) {
+        spinner = new JSpinner(new SpinnerNumberModel(0, 0, 50, 1));
+        spinner.setBorder(BorderFactory.createEmptyBorder());
+        this.table=table;
+        spinner.addChangeListener(e -> {    
+             int quantity = (Integer) spinner.getValue();
+             table.setValueAt(quantity,currentRow,4);
+             updateServicePrice(); 
+        });        
+    }
+    private void updateServicePrice(){
+        servicePrice=0.;      
+        for (int i = 0; i < table.getRowCount(); i++) { 
+         double price = (double) table.getValueAt(i, 2);
+         int quantity= (int) table.getValueAt(i, 4);
+         servicePrice += quantity * price;                
+        }
+        totalPrice=servicePrice+ticketPrice;
+        service2Label.setText(String.valueOf(servicePrice));
+        total2Label.setText(String.valueOf(totalPrice));
+    }
+    public void ResetSpinner(){
+        if (table.isEditing()) {
+           table.getCellEditor().stopCellEditing();
+        }        
+        for(int i=0;i<table.getRowCount();i++){
+           table.setValueAt(0,i,4);
+        }
+        service2Label.setText(String.valueOf(servicePrice));
+        table.repaint();        
+    }    
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value,
+            boolean isSelected, int row, int column) {
+        //spinner.setValue(value instanceof Integer ? (Integer) value : 0);
+        currentRow=row;
+        int val=value != null ? (Integer) value : 0;
+        spinner.setValue(val);
+        return spinner;
+    } 
+    @Override
+    public Object getCellEditorValue() {
+        return spinner.getValue();
+    }
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -420,23 +990,50 @@ public class TicketSale extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> MovieComboBox;
     private javax.swing.JTabbedPane SalePane;
     private javax.swing.JComboBox<String> ShowtimeComboBox;
+    private javax.swing.JButton ToInvoiceBtn;
+    private javax.swing.JButton ToServiceBtn;
+    private javax.swing.JButton ToTicketBtn;
     private javax.swing.JButton cancelBtn;
+    private javax.swing.JButton confirmBtn;
+    private javax.swing.JLabel cusLabel;
+    private javax.swing.JPanel cusPanel;
+    private javax.swing.JLabel invIdLabel;
+    private javax.swing.JPanel invoicePanel;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel movieLabel;
+    private javax.swing.JTextField phoneNumField;
     private javax.swing.JLabel roomLabel;
+    private javax.swing.JButton searchBtn;
+    private javax.swing.JLabel seatLabel;
     private javax.swing.JPanel seatPanel;
-    private javax.swing.JButton serviceBtn;
+    private javax.swing.JTable serInvTable;
+    private javax.swing.JLabel service2Label;
+    private javax.swing.JLabel service3Label;
     private javax.swing.JLabel serviceLabel;
+    private javax.swing.JPanel servicePanel;
+    private javax.swing.JLabel showtimeLabel;
+    private javax.swing.JTable tblProduct;
+    private javax.swing.JLabel ticket2Label;
+    private javax.swing.JLabel ticket3Label;
     private javax.swing.JLabel ticketLabel;
+    private javax.swing.JPanel ticketPanel;
+    private javax.swing.JButton toServiceBtn;
+    private javax.swing.JLabel total2Label;
+    private javax.swing.JLabel total3Label;
     private javax.swing.JLabel totalLabel;
     // End of variables declaration//GEN-END:variables
 }

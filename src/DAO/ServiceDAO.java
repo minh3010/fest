@@ -41,6 +41,34 @@ public class ServiceDAO {
             pst.setString(1,id);
             pst.executeUpdate();
         }
+    }
+    public void updateQuantity(Service service,int quantity) throws SQLException, ClassNotFoundException{
+        String sql="update service set service_quantity=? where service_id=?";
+        int newQuantity=service.getQuantity()-quantity;
+        try(PreparedStatement pst=getConnect().prepareStatement(sql)){           
+            pst.setInt(1,newQuantity);
+            pst.setString(2,service.getId());
+            pst.executeUpdate();
+        }
     }    
-    
+    public Service findById(String id) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT * FROM service WHERE service_id=?";
+        try (PreparedStatement stmt = getConnect().prepareStatement(sql)) {
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Service service = extractService(rs);
+                return service;
+            }
+        }
+        return null;
+    }         
+     private Service extractService(ResultSet rs) throws SQLException {
+        return new Service(
+            rs.getString("service_id"),
+            rs.getString("service_name"),
+            rs.getDouble("service_price"),
+            rs.getInt("service_quantity")       
+        );
+    }     
 }
