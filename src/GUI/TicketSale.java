@@ -38,7 +38,7 @@ public class TicketSale extends javax.swing.JFrame {
     private final TicketDAO ticketDAO;
     private Showtime selectedShowtime;
     private Customer selectedCustomer;
-    private List<String>bookingSeat;
+    private final List<String>bookingSeat;
     private Color defaultcolor;
     private SpinnerEditor editor;
     private Double ticketPrice=0.;
@@ -119,7 +119,7 @@ public class TicketSale extends javax.swing.JFrame {
         toServiceBtn = new javax.swing.JButton();
         confirmBtn = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setText("Tên phim");

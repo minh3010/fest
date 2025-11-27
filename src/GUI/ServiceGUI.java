@@ -27,6 +27,11 @@ public class ServiceGUI extends javax.swing.JFrame {
         serviceDAO=new ServiceDAO();
         initComponents();
         getTable();
+        tableService.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && tableService.getSelectedRow() != -1) {
+                loadSelected();
+            }
+        });         
     }
 
     /**
@@ -272,6 +277,15 @@ public class ServiceGUI extends javax.swing.JFrame {
           JOptionPane.showMessageDialog(this,"Lỗi");
        }
     }
+    private void loadSelected(){
+        int selectedRow = tableService.getSelectedRow();
+        if (selectedRow != -1) {
+            idField.setText((String) model.getValueAt(selectedRow, 0));
+            nameField.setText((String) model.getValueAt(selectedRow, 1));
+            priceField.setText(String.valueOf(model.getValueAt(selectedRow, 2)));
+            quantityField.setText(String.valueOf(model.getValueAt(selectedRow, 3)));          
+        }      
+    }    
     private void ClearForm(){
            idField.setText("");
            nameField.setText("");

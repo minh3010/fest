@@ -14,6 +14,7 @@ public class CustomerGUI extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CustomerGUI.class.getName());
     private final CustomerDAO cusDAO;
+    private DefaultTableModel model;
     /**
      * Creates new form CustomerGUI
      */
@@ -21,7 +22,11 @@ public class CustomerGUI extends javax.swing.JFrame {
         cusDAO=new CustomerDAO();
         initComponents();
         loadData();
-      
+        custable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && custable.getSelectedRow() != -1) {
+                loadSelected();
+            }
+        });         
     }
 
     private Connection getConnection() {
@@ -35,7 +40,7 @@ public class CustomerGUI extends javax.swing.JFrame {
 
     // Load tất cả khách hàng
     private void loadData() {
-        DefaultTableModel model = (DefaultTableModel) custable.getModel();
+        model = (DefaultTableModel) custable.getModel();
         model.setRowCount(0);
         try (Connection conn = getConnection()) {
             if (conn == null) return;
@@ -337,7 +342,7 @@ public class CustomerGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_EditBtnActionPerformed
 
     private void DeleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteBtnActionPerformed
-        DefaultTableModel model = (DefaultTableModel) custable.getModel();
+        model = (DefaultTableModel) custable.getModel();
     int selectedRow = custable.getSelectedRow();
 
     if (selectedRow == -1) {
@@ -366,7 +371,7 @@ public class CustomerGUI extends javax.swing.JFrame {
             loadData();
             return;
         }
-        DefaultTableModel model = (DefaultTableModel) custable.getModel();
+        model = (DefaultTableModel) custable.getModel();
         model.setRowCount(0);
         try (Connection conn = getConnection()) {
             if (conn == null) return;
@@ -386,7 +391,15 @@ public class CustomerGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm khách hàng:\n" + e.getMessage());
         }
     }//GEN-LAST:event_SearchBtnActionPerformed
-
+    private void loadSelected(){
+        int selectedRow = custable.getSelectedRow();
+        if (selectedRow != -1) {
+            CusNumField.setText((String) model.getValueAt(selectedRow, 0));
+            CusNameField.setText((String) model.getValueAt(selectedRow, 1));
+            CusPhoneField.setText((String) model.getValueAt(selectedRow, 2));
+            CusEmailField.setText((String) model.getValueAt(selectedRow, 3));         
+        }      
+    }
     /**
      * @param args the command line arguments
      */

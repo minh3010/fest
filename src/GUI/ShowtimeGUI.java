@@ -39,6 +39,11 @@ public class ShowtimeGUI extends javax.swing.JFrame {
         loadMovie();
         loadRoom();
         getTable();
+        tableShowtime.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && tableShowtime.getSelectedRow() != -1) {
+                loadSelected();
+            }
+        });               
     }
 
     /**
@@ -368,7 +373,26 @@ public class ShowtimeGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
         }
     }
-        private void ClearForm(){
+    private void loadSelected(){
+        int selectedRow = tableShowtime.getSelectedRow();
+        if (selectedRow != -1) {
+            idField.setText((String) model.getValueAt(selectedRow, 0));         
+            dateField.setText((String) model.getValueAt(selectedRow, 3));
+            String time=((String) model.getValueAt(selectedRow, 4)).split("-")[0];
+            timeField.setText(time);
+            priceField.setText(String.valueOf(model.getValueAt(selectedRow,5)));
+            try {
+                Showtime show = showtimeDAO.getShowtimeById(idField.getText()).orElse(null);
+                if (show != null) {         
+                    MovieComboBox.setSelectedItem(show.getMovie().getId() + " - " + show.getMovie().getTitle());
+                    RoomComboBox.setSelectedItem(show.getRoom().getId() + " - " + show.getRoom().getName());
+                }
+            } catch (SQLException | ClassNotFoundException e) {
+                JOptionPane.showMessageDialog(this,e.getMessage());
+            }
+        }      
+    }    
+    private void ClearForm(){
            idField.setText("");
            priceField.setText("");
            dateField.setText("");

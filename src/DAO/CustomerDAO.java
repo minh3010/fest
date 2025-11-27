@@ -110,7 +110,19 @@ public class CustomerDAO {
             }
         }
         return Optional.empty();
-    }    
+    } 
+    public Optional<Customer> findById(String id) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT * FROM customer WHERE cus_id=?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return Optional.of(extractCustomer(rs));
+            }
+        }
+        return Optional.empty();
+    }      
     public List<Customer> searchByPhone(String keyword) throws SQLException, ClassNotFoundException {
         List<Customer> list = new ArrayList<>();
         String sql = "SELECT * FROM Customer WHERE Cus_phone LIKE ?";

@@ -86,7 +86,8 @@ public class MovieDAO {
             rs.getString("mov_title"),
             rs.getString("mov_genre"),
             rs.getString("mov_director"),    
-            rs.getInt("mov_duration")        
+            rs.getInt("mov_duration"),
+            rs.getBoolean("mov_is_showing")    
         );
     }    
 }

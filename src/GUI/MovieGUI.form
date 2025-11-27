@@ -57,11 +57,11 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="IdField" max="32767" attributes="0"/>
-                              <Component id="titleField" max="32767" attributes="0"/>
-                              <Component id="genreField" pref="89" max="32767" attributes="0"/>
+                              <Component id="titleField" alignment="0" pref="107" max="32767" attributes="0"/>
+                              <Component id="genreField" alignment="0" max="32767" attributes="0"/>
+                              <Component id="IdField" alignment="0" max="32767" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="67" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" attributes="0">
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                               <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
@@ -70,8 +70,8 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="ShowingCheckBox" min="-2" max="-2" attributes="0"/>
-                              <Component id="durationField" max="32767" attributes="0"/>
-                              <Component id="directorField" alignment="0" pref="85" max="32767" attributes="0"/>
+                              <Component id="directorField" pref="107" max="32767" attributes="0"/>
+                              <Component id="durationField" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <Component id="jScrollPane1" alignment="0" min="-2" pref="418" max="-2" attributes="0"/>

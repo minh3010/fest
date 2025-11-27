@@ -90,6 +90,11 @@ public class ManagerMenu extends javax.swing.JFrame {
         });
 
         reportBtn.setText("Thống kê doanh thu");
+        reportBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reportBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -182,6 +187,10 @@ public class ManagerMenu extends javax.swing.JFrame {
             new ShowtimeGUI().setVisible(true);
         });
     }//GEN-LAST:event_showtimeBtnActionPerformed
+
+    private void reportBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportBtnActionPerformed
+        java.awt.EventQueue.invokeLater(() -> new RevenueGUI().setVisible(true));
+    }//GEN-LAST:event_reportBtnActionPerformed
 
     /**
      * @param args the command line arguments

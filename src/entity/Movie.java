@@ -17,13 +17,13 @@ public class Movie {
     private boolean isShowing;
     public Movie(){
     }
-    public Movie(String id,String title,String genre,String director,int duration){
+    public Movie(String id,String title,String genre,String director,int duration,boolean isShowing){
         this.id=id;
         this.title=title;
         this.genre=genre;
         this.director=director;
         this.duration=duration;
-       // this.isShowing=isShowing;
+        this.isShowing=isShowing;
     }
     public String getId(){return id;}
     public void setId(String id){this.id=id;}

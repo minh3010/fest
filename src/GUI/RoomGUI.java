@@ -28,6 +28,11 @@ public class RoomGUI extends javax.swing.JFrame {
         roomDAO=new RoomDAO();
         initComponents();
         getRoom();
+        TableRoom.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && TableRoom.getSelectedRow() != -1) {
+                loadSelected();
+            }
+        });         
     }
 
     /**
@@ -389,6 +394,22 @@ public class RoomGUI extends javax.swing.JFrame {
           
        }
     }//GEN-LAST:event_RoomComboBoxActionPerformed
+    private void loadSelected(){
+        int selectedRow = TableRoom.getSelectedRow();
+        if (selectedRow != -1) {
+            IdField.setText((String) model.getValueAt(selectedRow, 0));
+            NameField.setText((String) model.getValueAt(selectedRow, 1));          
+            try {
+                Room room = roomDAO.findById(IdField.getText()).orElse(null);
+                if (room != null) {
+                    RowField.setText(String.valueOf(room.getRowNum()));
+                    SeatPerRowField.setText(String.valueOf(room.getSeatPerRow()));
+                }
+            } catch (SQLException | ClassNotFoundException e) {
+                JOptionPane.showMessageDialog(this,e.getMessage());
+            }
+        }      
+    }    
     private void ClearForm(){
            IdField.setText("");
            NameField.setText("");

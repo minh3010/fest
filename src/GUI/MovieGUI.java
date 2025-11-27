@@ -26,6 +26,11 @@ public class MovieGUI extends javax.swing.JFrame {
     public MovieGUI() {
         movieDAO=new MovieDAO();
         initComponents();
+        tableMovie.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting() && tableMovie.getSelectedRow() != -1) {
+                loadSelected();
+            }
+        });        
         getTable();
     }
 
@@ -151,10 +156,10 @@ public class MovieGUI extends javax.swing.JFrame {
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(IdField)
-                            .addComponent(titleField)
-                            .addComponent(genreField, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE))
-                        .addGap(67, 67, 67)
+                            .addComponent(titleField, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+                            .addComponent(genreField)
+                            .addComponent(IdField))
+                        .addGap(49, 49, 49)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel5)
                             .addComponent(jLabel4)
@@ -162,8 +167,8 @@ public class MovieGUI extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(ShowingCheckBox)
-                            .addComponent(durationField)
-                            .addComponent(directorField, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)))
+                            .addComponent(directorField, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+                            .addComponent(durationField)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -265,9 +270,9 @@ public class MovieGUI extends javax.swing.JFrame {
                     titleField.getText().trim(),
                     genreField.getText().trim(),
                     directorField.getText().trim(),
-                    Integer.parseInt(durationField.getText().trim())
+                    Integer.parseInt(durationField.getText().trim()),
+                    ShowingCheckBox.isSelected()
             );
-            movie.setShowing(ShowingCheckBox.isSelected());
             movieDAO.addMovie(movie);
             JOptionPane.showMessageDialog(this,"Thêm thành công");
             getTable();
@@ -287,9 +292,9 @@ public class MovieGUI extends javax.swing.JFrame {
                 titleField.getText().trim(),
                 genreField.getText().trim(),
                 directorField.getText().trim(),
-                Integer.parseInt(durationField.getText().trim())
+                Integer.parseInt(durationField.getText().trim()),
+                ShowingCheckBox.isSelected()    
             );
-            movie.setShowing(ShowingCheckBox.isSelected());
             movieDAO.editMovie(movie);
             JOptionPane.showMessageDialog(this,"Cập nhật thành công");
             getTable();
@@ -320,6 +325,25 @@ public class MovieGUI extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_deleteBtnActionPerformed
+    private void loadSelected(){
+        int selectedRow = tableMovie.getSelectedRow();
+        if (selectedRow != -1) {
+            IdField.setText((String) model.getValueAt(selectedRow, 0));
+            titleField.setText((String) model.getValueAt(selectedRow, 1));
+            genreField.setText((String) model.getValueAt(selectedRow, 2));
+            directorField.setText((String) model.getValueAt(selectedRow, 3));
+            String duration=String.valueOf(model.getValueAt(selectedRow, 4)) ;
+            durationField.setText(duration);           
+            try {
+                Movie movie = movieDAO.findById(IdField.getText()).orElse(null);
+                if (movie != null) {         
+                    ShowingCheckBox.setSelected(movie.isShowing());
+                }
+            } catch (SQLException | ClassNotFoundException e) {
+                JOptionPane.showMessageDialog(this,e.getMessage());
+            }
+        }      
+    }
     private void ClearForm(){
            IdField.setText("");
            titleField.setText("");

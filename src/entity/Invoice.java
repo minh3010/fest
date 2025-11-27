@@ -15,7 +15,10 @@ public class Invoice {
     private Double service_sub;
     private Double total;
     private Timestamp date;
-    public Invoice(){}
+    public Invoice(){
+       this.ticket_sub=0.;
+       this.service_sub=0.;
+    }
     public Invoice(String id,Customer cus,Double ticket_sub,Double service_sub){
        this.id=id;
        this.cus=cus;

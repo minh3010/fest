@@ -4,11 +4,16 @@
  */
 package DAO;
 import cinema.Database;
+import entity.Customer;
 import entity.Invoice;
 import entity.InvoiceService;
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author Lenovo
@@ -17,6 +22,13 @@ public class InvoiceDAO {
     
     private Connection getConnect() throws ClassNotFoundException, SQLException{
        return Database.getDB().connect();
+    }
+    private String parseDate(String str) throws ParseException {
+        DateTimeFormatter inputFormat  = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(str, inputFormat);
+        String output = date.format(outputFormat);
+        return output;  
     }    
     public String generateId() throws ClassNotFoundException, SQLException{
           LocalDate now=LocalDate.now();
@@ -35,6 +47,18 @@ public class InvoiceDAO {
               }
               
           }                 
+    }
+    public List<Invoice> getAllInvoice() throws ClassNotFoundException, SQLException{
+        List<Invoice> invs = new ArrayList<>();
+        String sql = "SELECT * FROM invoice ORDER BY inv_date";
+        try (Statement stmt = getConnect().createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Invoice inv = extractInvoice(rs);
+                invs.add(inv);
+            }
+        }        
+        return invs;
     }
     public void addInvoice(Invoice inv) throws SQLException, ClassNotFoundException{
         String sql="insert into invoice(inv_id,cus_id,ticket_subtotal,service_subtotal,inv_total) values(?,?,?,?,?)";
@@ -57,5 +81,87 @@ public class InvoiceDAO {
             pst.setDouble(5,inv.getTotal());
             pst.executeUpdate();
         }
-    }       
+    }
+ /*   public List<Invoice> getInvoiceByDate(LocalDate date) throws ClassNotFoundException, SQLException{
+        List<Invoice> invs = new ArrayList<>();
+        String sql = "SELECT * FROM invoice where date(inv_date) = ?";
+        try (PreparedStatement pst=getConnect().prepareStatement(sql)) {
+            pst.setDate(1,Date.valueOf(date));
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                Invoice inv = extractInvoice(rs);
+                invs.add(inv);
+            }
+        }        
+        return invs;
+    }    
+    public double getRevenueByDate(LocalDate date) throws ClassNotFoundException, SQLException{
+        double total=0;
+        for(Invoice inv:getInvoiceByDate(date)){
+            total+=inv.getTotal();
+        }
+        return total;
+    }*/
+    public List<Object[]> getRevenueByDate() throws ClassNotFoundException, SQLException{      
+        String sql = "SELECT DATE(inv_date) as date , SUM(inv_total) as revenue FROM  invoice GROUP BY DATE(inv_date) ORDER BY DATE(inv_date)";
+        List<Object[]> results=new ArrayList<>();
+        DateTimeFormatter format=DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        try (Statement stmt = getConnect().createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                LocalDate date = rs.getDate("date").toLocalDate();
+                double revenue = rs.getDouble("revenue");
+                results.add(new Object[]{date.format(format), revenue});
+            }            
+        }
+        return results;
+    }
+    public List<Object[]> getRevenueByDateRange(String start,String end) throws ClassNotFoundException, SQLException, ParseException{      
+        String sql = "SELECT DATE(inv_date) as date , SUM(inv_total) as revenue FROM  invoice where DATE(inv_date) between ? and ? GROUP BY DATE(inv_date) ORDER BY DATE(inv_date)";
+        List<Object[]> results=new ArrayList<>();
+        DateTimeFormatter format=DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        try (PreparedStatement stmt = getConnect().prepareStatement(sql)) {
+            String startDate=parseDate(start);
+            String endDate=parseDate(end);
+            stmt.setString(1,startDate);
+            stmt.setString(2,endDate);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                LocalDate date = rs.getDate("date").toLocalDate();
+                double revenue = rs.getDouble("revenue");
+                results.add(new Object[]{date.format(format), revenue});
+            }            
+        }
+        return results;
+    }
+    public List<Object[]> getRevenueByMovie() throws ClassNotFoundException, SQLException{      
+        String sql = "SELECT m.Mov_title AS title, SUM(t.Ticket_price) AS revenue\n" +
+                     "FROM Ticket t\n" +
+                     "JOIN Showtime s ON t.Show_ID = s.Show_ID\n" +
+                     "JOIN Movie m ON s.Mov_ID = m.Mov_ID\n" +
+                     "GROUP BY m.Mov_title\n" +
+                     "ORDER BY revenue DESC;";
+        List<Object[]> results=new ArrayList<>();
+        try (Statement stmt = getConnect().createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                String title = rs.getString("title");
+                double revenue = rs.getDouble("revenue");
+                results.add(new Object[]{title, revenue});
+            }            
+        }
+        return results;
+    }    
+    private Invoice extractInvoice(ResultSet rs) throws SQLException, ClassNotFoundException {
+        Invoice inv=new Invoice();
+        CustomerDAO cusDAO=new CustomerDAO();
+        Customer cus=cusDAO.findById(rs.getString("cus_id")).orElse(null);
+        inv.setId(rs.getString("inv_id"));
+        inv.setCustomer(cus);
+        inv.setDate(rs.getTimestamp("inv_date"));
+        inv.setTicket_sub(rs.getDouble("ticket_subtotal"));
+        inv.setService_sub(rs.getDouble("service_subtotal"));
+        inv.setTotal(rs.getDouble("inv_total"));
+        return inv;
+    }
 }
