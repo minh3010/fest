@@ -61,13 +61,17 @@ public class InvoiceDAO {
         return invs;
     }
     public void addInvoice(Invoice inv) throws SQLException, ClassNotFoundException{
-        String sql="insert into invoice(inv_id,cus_id,ticket_subtotal,service_subtotal,inv_total) values(?,?,?,?,?)";
+        String sql="insert into invoice(inv_id,cus_id,ticket_subtotal,service_subtotal,discount,inv_total) values(?,?,?,?,?,?)";
         try(PreparedStatement pst=getConnect().prepareStatement(sql)){
             pst.setString(1,inv.getId());
-            pst.setString(2,inv.getCus().getCusID());
+            if(inv.getCus()!=null){
+               pst.setString(2,inv.getCus().getCusID());
+            }
+            else{pst.setString(2,null);}
             pst.setDouble(3,inv.getTicket_sub());
             pst.setDouble(4,inv.getService_sub());
-            pst.setDouble(5,inv.getTotal());
+            pst.setDouble(5,inv.getDiscount());
+            pst.setDouble(6,inv.getTotal());
             pst.executeUpdate();
         }
     }    

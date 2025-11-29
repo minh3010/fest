@@ -13,18 +13,21 @@ public class Invoice {
     private Customer cus;
     private Double ticket_sub;
     private Double service_sub;
+    private Double discount;
     private Double total;
     private Timestamp date;
     public Invoice(){
        this.ticket_sub=0.;
        this.service_sub=0.;
+       this.discount=0.;
     }
-    public Invoice(String id,Customer cus,Double ticket_sub,Double service_sub){
+    public Invoice(String id,Customer cus,Double ticket_sub,Double service_sub,Double discount){
        this.id=id;
        this.cus=cus;
        this.ticket_sub=ticket_sub;
        this.service_sub=service_sub;
-       this.total=ticket_sub+service_sub;
+       this.discount=discount;       
+       this.total=ticket_sub+service_sub-discount;
     }
     public String getId() {
         return id;
@@ -53,7 +56,14 @@ public class Invoice {
     public void setService_sub(Double service_sub) {
         this.service_sub = service_sub;
         total=ticket_sub+service_sub;
-    }     
+    } 
+    public Double getDiscount() {
+        return discount;
+    }
+    public void setDiscount(Double discount) {
+        this.discount = discount;
+        total=ticket_sub+service_sub-discount;
+    }      
     public Double getTotal() {
         return total;
     }

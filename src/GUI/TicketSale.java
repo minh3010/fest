@@ -37,12 +37,13 @@ public class TicketSale extends javax.swing.JFrame {
     private final ServiceDAO serDAO;
     private final TicketDAO ticketDAO;
     private Showtime selectedShowtime;
-    private Customer selectedCustomer;
+    private Customer selectedCustomer=null;
     private final List<String>bookingSeat;
     private Color defaultcolor;
     private SpinnerEditor editor;
     private Double ticketPrice=0.;
     private Double servicePrice=0.;
+    private Double discountPrice=0.;
     private Double totalPrice=0.;
     /**
      * Creates new form TicketSale
@@ -91,6 +92,7 @@ public class TicketSale extends javax.swing.JFrame {
         phoneNumField = new javax.swing.JTextField();
         searchBtn = new javax.swing.JButton();
         cusPanel = new javax.swing.JPanel(new GridLayout(4,2,5,5));
+        wanderCheckBox = new javax.swing.JCheckBox();
         servicePanel = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -116,8 +118,12 @@ public class TicketSale extends javax.swing.JFrame {
         ticket3Label = new javax.swing.JLabel();
         service3Label = new javax.swing.JLabel();
         total3Label = new javax.swing.JLabel();
+        discountLabel = new javax.swing.JLabel();
         toServiceBtn = new javax.swing.JButton();
         confirmBtn = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        pointField = new javax.swing.JTextField();
+        tradeBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -191,6 +197,8 @@ public class TicketSale extends javax.swing.JFrame {
             .addGap(0, 172, Short.MAX_VALUE)
         );
 
+        wanderCheckBox.setText("Vãng lai");
+
         javax.swing.GroupLayout ticketPanelLayout = new javax.swing.GroupLayout(ticketPanel);
         ticketPanel.setLayout(ticketPanelLayout);
         ticketPanelLayout.setHorizontalGroup(
@@ -209,20 +217,18 @@ public class TicketSale extends javax.swing.JFrame {
                         .addGap(41, 41, 41)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(ShowtimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(ShowtimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(wanderCheckBox))
                         .addGap(29, 29, 29)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel12)
-                            .addComponent(phoneNumField, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(searchBtn)))
+                            .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(phoneNumField, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(searchBtn, javax.swing.GroupLayout.Alignment.TRAILING))))
                     .addComponent(seatPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(ticketPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cusPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(ticketPanelLayout.createSequentialGroup()
-                        .addGap(29, 29, 29)
+                        .addGap(40, 40, 40)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(ticketPanelLayout.createSequentialGroup()
                                 .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -234,17 +240,22 @@ public class TicketSale extends javax.swing.JFrame {
                                         .addComponent(jLabel8)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(totalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 162, Short.MAX_VALUE))
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(ticketPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(ticketLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(ticketPanelLayout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addComponent(cancelBtn)
-                        .addGap(58, 58, 58)
-                        .addComponent(ToServiceBtn)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(ticketPanelLayout.createSequentialGroup()
+                                .addGap(63, 63, 63)
+                                .addComponent(cancelBtn)
+                                .addGap(58, 58, 58)
+                                .addComponent(ToServiceBtn))
+                            .addGroup(ticketPanelLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cusPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap())))
         );
         ticketPanelLayout.setVerticalGroup(
@@ -262,15 +273,17 @@ public class TicketSale extends javax.swing.JFrame {
                             .addComponent(MovieComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(ShowtimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(phoneNumField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(searchBtn)
-                        .addGap(10, 10, 10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(searchBtn)
+                            .addComponent(wanderCheckBox))
+                        .addGap(6, 6, 6)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
                             .addComponent(roomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(seatPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(21, Short.MAX_VALUE))
+                        .addContainerGap(19, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ticketPanelLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(cusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -430,7 +443,7 @@ public class TicketSale extends javax.swing.JFrame {
 
         showtimeLabel.setText("Suất chiếu:");
 
-        cusLabel.setText("Khách hàng:");
+        cusLabel.setText("Khách hàng: null");
 
         seatLabel.setText("Ghế:");
 
@@ -468,6 +481,8 @@ public class TicketSale extends javax.swing.JFrame {
 
         total3Label.setText("Thành tiền:");
 
+        discountLabel.setText("Giảm giá:");
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -477,8 +492,9 @@ public class TicketSale extends javax.swing.JFrame {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(total3Label)
                     .addComponent(ticket3Label)
-                    .addComponent(service3Label))
-                .addContainerGap(93, Short.MAX_VALUE))
+                    .addComponent(service3Label)
+                    .addComponent(discountLabel))
+                .addContainerGap(124, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -487,9 +503,11 @@ public class TicketSale extends javax.swing.JFrame {
                 .addComponent(ticket3Label)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(service3Label)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(discountLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(total3Label)
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addGap(37, 37, 37))
         );
 
         toServiceBtn.setText("Quay lại");
@@ -506,6 +524,15 @@ public class TicketSale extends javax.swing.JFrame {
             }
         });
 
+        jLabel7.setText("Đổi điểm:");
+
+        tradeBtn.setText("Đổi");
+        tradeBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tradeBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout invoicePanelLayout = new javax.swing.GroupLayout(invoicePanel);
         invoicePanel.setLayout(invoicePanelLayout);
         invoicePanelLayout.setHorizontalGroup(
@@ -516,7 +543,7 @@ public class TicketSale extends javax.swing.JFrame {
                     .addGroup(invoicePanelLayout.createSequentialGroup()
                         .addGap(7, 7, 7)
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(146, 146, 146)
+                        .addGap(115, 115, 115)
                         .addComponent(toServiceBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(60, 60, 60)
                         .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -528,7 +555,13 @@ public class TicketSale extends javax.swing.JFrame {
                                 .addComponent(cusLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(movieLabel, javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(showtimeLabel, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(seatLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(seatLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(invoicePanelLayout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(pointField, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(tradeBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(90, 90, 90))))
@@ -548,17 +581,22 @@ public class TicketSale extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(showtimeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(seatLabel)))
-                .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(invoicePanelLayout.createSequentialGroup()
+                        .addComponent(seatLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(pointField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tradeBtn))))
+                .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(invoicePanelLayout.createSequentialGroup()
                         .addGap(80, 80, 80)
                         .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(toServiceBtn)
-                            .addComponent(confirmBtn))))
-                .addContainerGap(70, Short.MAX_VALUE))
+                            .addComponent(confirmBtn)))
+                    .addGroup(invoicePanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(61, Short.MAX_VALUE))
         );
 
         SalePane.addTab("tab3", invoicePanel);
@@ -567,7 +605,11 @@ public class TicketSale extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+    private void setTotalPrice(Double price){
+       totalLabel.setText(String.valueOf(totalPrice)); 
+       total2Label.setText(String.valueOf(totalPrice)); 
+       total3Label.setText("Thành tiền: "+String.valueOf(totalPrice));  
+    }
     private void MovieComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MovieComboBoxActionPerformed
         try {
             String movieId = ((String) MovieComboBox.getSelectedItem()).split(" - ")[0];
@@ -620,13 +662,19 @@ public class TicketSale extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelBtnActionPerformed
 
     private void ToServiceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ToServiceBtnActionPerformed
+        if(cusPanel.getComponentCount()!=0 && wanderCheckBox.isSelected()==true){
+            JOptionPane.showMessageDialog(this,"Chỉ chọn một(vãng lai or thành viên)");
+            return;         
+        }
         if(ticketPrice==0.){
             JOptionPane.showMessageDialog(this,"Hãy chọn ghế");
             return;
         }
-        else if(phoneNumField.getText().isEmpty()){
+        else if(wanderCheckBox.isSelected()==false){
+            if(phoneNumField.getText().isEmpty()){
             JOptionPane.showMessageDialog(this,"Hãy điền khách hàng");
             return;
+          }
         }
         SalePane.setSelectedIndex(1);
         ticket2Label.setText(String.valueOf(ticketPrice)); 
@@ -657,8 +705,10 @@ public class TicketSale extends javax.swing.JFrame {
             invIdLabel.setText("Mã hóa đơn:"+invDAO.generateId());
         } catch (SQLException | ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
-        } 
-        cusLabel.setText("Khách hàng:"+selectedCustomer.getCusName());
+        }
+        if(selectedCustomer!=null){
+           cusLabel.setText("Khách hàng:"+selectedCustomer.getCusName()+" - "+selectedCustomer.getCusPoint());
+        }              
         movieLabel.setText("Tên phim:"+selectedShowtime.getMovie().getTitle());
         showtimeLabel.setText("Suất chiếu:"+selectedShowtime.getStart_time()+"-"+selectedShowtime.getEnd_time());
         seatLabel.setText("Ghế:"+sb.toString().trim());
@@ -733,10 +783,12 @@ public class TicketSale extends javax.swing.JFrame {
 
     private void confirmBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmBtnActionPerformed
         try {
-            Invoice inv=new Invoice(invDAO.generateId(),selectedCustomer,ticketPrice,servicePrice);
+            Invoice inv=new Invoice(invDAO.generateId(),selectedCustomer,ticketPrice,servicePrice,discountPrice);
             invDAO.addInvoice(inv);
-            selectedCustomer.addPoint(inv);
-            cusDAO.updatePoint(selectedCustomer);
+            if(selectedCustomer!=null){
+                selectedCustomer.addPoint(inv);
+                cusDAO.updatePoint(selectedCustomer);
+            }
             for(int i=0;i<serInvTable.getRowCount();i++){
                 String id=(String)serInvTable.getValueAt(i,0);
                 Service ser=serDAO.findById(id);
@@ -758,6 +810,28 @@ public class TicketSale extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
         }       
     }//GEN-LAST:event_confirmBtnActionPerformed
+
+    private void tradeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tradeBtnActionPerformed
+        if(pointField.getText().isEmpty()){
+           JOptionPane.showMessageDialog(this,"Hãy nhập điểm");
+           return;           
+        }
+        int point=Integer.parseInt(pointField.getText().trim());
+        int CurrentPoint=selectedCustomer.getCusPoint();
+        if(point>CurrentPoint){
+           JOptionPane.showMessageDialog(this,"Điểm vượt mức đang có");
+           return;
+        }
+        int confirm=JOptionPane.showConfirmDialog(this,"Bạn có chắc muốn đổi điểm (không hoàn điểm)");
+        if(confirm==JOptionPane.YES_OPTION){
+           selectedCustomer.setCusPoint(CurrentPoint-point);
+           discountPrice=(double) point;
+           totalPrice=totalPrice-discountPrice;
+           cusLabel.setText("Khách hàng:"+selectedCustomer.getCusName()+" - "+selectedCustomer.getCusPoint());
+           discountLabel.setText("Giảm giá:"+discountPrice);
+           setTotalPrice(totalPrice);
+        }      
+    }//GEN-LAST:event_tradeBtnActionPerformed
     
     /**
      * @param args the command line arguments
@@ -826,6 +900,7 @@ public class TicketSale extends javax.swing.JFrame {
     private void clear(){
         ticketPrice=0.;
         servicePrice=0.;
+        discountPrice=0.;
         totalPrice=0.;
         ticketLabel.setText(String.valueOf(ticketPrice));
         serviceLabel.setText(String.valueOf(servicePrice));
@@ -838,6 +913,7 @@ public class TicketSale extends javax.swing.JFrame {
         MovieComboBox.setSelectedIndex(0);
         ShowtimeComboBox.setSelectedIndex(0);          
         editor.ResetSpinner();
+        discountLabel.setText("Giảm giá:0.");
         getSeatTable();
         clear();      
     }    
@@ -997,6 +1073,7 @@ public class TicketSale extends javax.swing.JFrame {
     private javax.swing.JButton confirmBtn;
     private javax.swing.JLabel cusLabel;
     private javax.swing.JPanel cusPanel;
+    private javax.swing.JLabel discountLabel;
     private javax.swing.JLabel invIdLabel;
     private javax.swing.JPanel invoicePanel;
     private javax.swing.JLabel jLabel1;
@@ -1008,6 +1085,7 @@ public class TicketSale extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel4;
@@ -1016,6 +1094,7 @@ public class TicketSale extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel movieLabel;
     private javax.swing.JTextField phoneNumField;
+    private javax.swing.JTextField pointField;
     private javax.swing.JLabel roomLabel;
     private javax.swing.JButton searchBtn;
     private javax.swing.JLabel seatLabel;
@@ -1035,5 +1114,7 @@ public class TicketSale extends javax.swing.JFrame {
     private javax.swing.JLabel total2Label;
     private javax.swing.JLabel total3Label;
     private javax.swing.JLabel totalLabel;
+    private javax.swing.JButton tradeBtn;
+    private javax.swing.JCheckBox wanderCheckBox;
     // End of variables declaration//GEN-END:variables
 }

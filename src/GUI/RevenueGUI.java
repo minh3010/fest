@@ -103,7 +103,7 @@ public class RevenueGUI extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         revenueMovieLabel = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setText("Từ ngày");
 
