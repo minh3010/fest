@@ -204,7 +204,7 @@ public class ManagerMenu extends javax.swing.JFrame {
     }//GEN-LAST:event_reportBtnActionPerformed
 
     private void empBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_empBtnActionPerformed
-        // TODO add your handling code here:
+        java.awt.EventQueue.invokeLater(() -> new EmployeeGUI().setVisible(true));
     }//GEN-LAST:event_empBtnActionPerformed
 
     /**
