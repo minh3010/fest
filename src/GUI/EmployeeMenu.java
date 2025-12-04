@@ -58,6 +58,11 @@ public class EmployeeMenu extends javax.swing.JFrame {
         });
 
         reportBtn.setText("Thống kê hóa đơn");
+        reportBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reportBtnActionPerformed(evt);
+            }
+        });
 
         ticketBtn.setText("Bán vé");
         ticketBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -133,6 +138,10 @@ public class EmployeeMenu extends javax.swing.JFrame {
     private void ticketBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ticketBtnActionPerformed
         java.awt.EventQueue.invokeLater(() -> new TicketSale().setVisible(true));
     }//GEN-LAST:event_ticketBtnActionPerformed
+
+    private void reportBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportBtnActionPerformed
+        java.awt.EventQueue.invokeLater(() -> new InvoiceStatistics().setVisible(true));
+    }//GEN-LAST:event_reportBtnActionPerformed
 
     /**
      * @param args the command line arguments

@@ -58,6 +58,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="movieBtn" alignment="0" min="-2" pref="102" max="-2" attributes="0"/>
                               <Component id="serviceBtn" alignment="0" min="-2" pref="102" max="-2" attributes="0"/>
+                              <Component id="empBtn" alignment="0" min="-2" pref="102" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="72" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -95,7 +96,9 @@
                       <Component id="customerBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="reportBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="102" max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
+                  <Component id="empBtn" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="42" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -163,6 +166,14 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reportBtnActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="empBtn">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Nh&#xe2;n vi&#xea;n"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="empBtnActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

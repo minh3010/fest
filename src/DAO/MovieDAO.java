@@ -67,7 +67,18 @@ public class MovieDAO {
             }
         }
         return movies;
-    }    
+    }
+    public List<Object[]> findMovieByShowtime() throws SQLException, ClassNotFoundException {
+        List<Object[]> results=new ArrayList<>();
+        String sql = "select m.Mov_ID,Mov_title,Show_date from movie m join showtime s on m.Mov_ID=s.Mov_ID";
+        try (Statement stmt = getConnect().createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                  results.add(new Object[]{rs.getString("mov_id"),rs.getString("mov_title"),rs.getDate("Show_date").toLocalDate()});
+            }
+        }
+        return results;
+    }     
     public Optional<Movie> findById(String id) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM movie WHERE mov_id=?";
         try (PreparedStatement stmt = getConnect().prepareStatement(sql)) {

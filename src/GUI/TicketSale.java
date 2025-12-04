@@ -19,6 +19,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
@@ -150,11 +151,11 @@ public class TicketSale extends javax.swing.JFrame {
         seatPanel.setLayout(seatPanelLayout);
         seatPanelLayout.setHorizontalGroup(
             seatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 365, Short.MAX_VALUE)
+            .addGap(0, 375, Short.MAX_VALUE)
         );
         seatPanelLayout.setVerticalGroup(
             seatPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 231, Short.MAX_VALUE)
+            .addGap(0, 258, Short.MAX_VALUE)
         );
 
         jLabel4.setText("Giá vé:");
@@ -194,7 +195,7 @@ public class TicketSale extends javax.swing.JFrame {
         );
         cusPanelLayout.setVerticalGroup(
             cusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 172, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         wanderCheckBox.setText("Vãng lai");
@@ -228,7 +229,7 @@ public class TicketSale extends javax.swing.JFrame {
                     .addComponent(seatPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(ticketPanelLayout.createSequentialGroup()
-                        .addGap(40, 40, 40)
+                        .addGap(30, 30, 30)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(ticketPanelLayout.createSequentialGroup()
                                 .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -249,7 +250,7 @@ public class TicketSale extends javax.swing.JFrame {
                     .addGroup(ticketPanelLayout.createSequentialGroup()
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(ticketPanelLayout.createSequentialGroup()
-                                .addGap(63, 63, 63)
+                                .addGap(53, 53, 53)
                                 .addComponent(cancelBtn)
                                 .addGap(58, 58, 58)
                                 .addComponent(ToServiceBtn))
@@ -283,7 +284,7 @@ public class TicketSale extends javax.swing.JFrame {
                             .addComponent(roomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(seatPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(19, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ticketPanelLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(cusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -547,7 +548,7 @@ public class TicketSale extends javax.swing.JFrame {
                         .addComponent(toServiceBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(60, 60, 60)
                         .addComponent(confirmBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(142, Short.MAX_VALUE))
+                        .addContainerGap(182, Short.MAX_VALUE))
                     .addGroup(invoicePanelLayout.createSequentialGroup()
                         .addGroup(invoicePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(invIdLabel)
@@ -596,12 +597,12 @@ public class TicketSale extends javax.swing.JFrame {
                     .addGroup(invoicePanelLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(61, Short.MAX_VALUE))
+                .addContainerGap(81, Short.MAX_VALUE))
         );
 
         SalePane.addTab("tab3", invoicePanel);
 
-        getContentPane().add(SalePane, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, -40, 750, 440));
+        getContentPane().add(SalePane, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, -40, 790, 460));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -614,10 +615,13 @@ public class TicketSale extends javax.swing.JFrame {
         try {
             String movieId = ((String) MovieComboBox.getSelectedItem()).split(" - ")[0];
             bookingSeat.removeAll(bookingSeat);
+            LocalDate date=LocalDate.now();
             ShowtimeComboBox.removeAllItems();
             List<Showtime> showtimes = showtimeDAO.getShowtimesByMovieId(movieId);
             for (Showtime showtime : showtimes) {
-                ShowtimeComboBox.addItem(showtime.getStart_time() + " - " + showtime.getEnd_time());
+                if(showtime.getDate().equals(date)){
+                  ShowtimeComboBox.addItem(showtime.getStart_time() + " - " + showtime.getEnd_time());
+                }
             }
             clear();
         } catch(SQLException | ClassNotFoundException ex){
@@ -764,14 +768,19 @@ public class TicketSale extends javax.swing.JFrame {
     }
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
         String phone=phoneNumField.getText().trim();
-        try{
-        Customer cus=cusDAO.findByPhone(phone).orElse(null);
-        if(cus==null){
+        if(phoneNumField.getText().isEmpty()){
+           cusPanel.removeAll();
+           selectedCustomer=null;
+           return;
+        }
+        try{            
+          Customer cus=cusDAO.findByPhone(phone).orElse(null);
+          if(cus==null){
             createNewCustomer();
             return;
-        }
-        selectedCustomer=cus;
-        displayCus(cus);
+          }
+          selectedCustomer=cus;
+          displayCus(cus);
         } catch(SQLException | ClassNotFoundException ex){
            JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
         } 
@@ -911,7 +920,7 @@ public class TicketSale extends javax.swing.JFrame {
     private void reset(){
         SalePane.setSelectedIndex(0);
         MovieComboBox.setSelectedIndex(0);
-        ShowtimeComboBox.setSelectedIndex(0);          
+        ShowtimeComboBox.setSelectedIndex(0);       
         editor.ResetSpinner();
         discountLabel.setText("Giảm giá:0.");
         getSeatTable();
@@ -920,10 +929,13 @@ public class TicketSale extends javax.swing.JFrame {
     private void loadMovie(){
         try {
             MovieComboBox.removeAllItems();
-            List<Movie> movies = movieDAO.findAll();
-            for (Movie movie : movies) {
-                MovieComboBox.addItem(movie.getId() + " - " + movie.getTitle());
-            }
+            List<Object[]> results = movieDAO.findMovieByShowtime();
+            LocalDate date=LocalDate.now();       
+            for (Object[] obj : results) {
+               if(obj[2].equals(date)){ 
+                MovieComboBox.addItem(obj[0] + " - " + obj[1]);
+               }
+            }           
         } catch(SQLException | ClassNotFoundException ex){
             JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
         }

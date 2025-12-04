@@ -33,17 +33,19 @@ public class InvoiceDAO {
     public String generateId() throws ClassNotFoundException, SQLException{
           LocalDate now=LocalDate.now();
           DateTimeFormatter format=DateTimeFormatter.ofPattern("yyMMdd");
-          String sql="select max(inv_id) from invoice";
-          try(PreparedStatement pst = getConnect().prepareStatement(sql)){  
+          String dateNow=now.format(format);
+          String sql="select max(inv_id) from invoice where inv_id like ?";
+          try(PreparedStatement pst = getConnect().prepareStatement(sql)){
+              pst.setString(1,"%"+dateNow+"%");
               ResultSet rs=pst.executeQuery();
               rs.next();
               if(rs.getString("max(inv_id)")==null){
-                  return "INV"+now.format(format)+"001";
+                  return "INV"+dateNow+"001";
               }
               else{
                 long id=Long.parseLong(rs.getString("max(inv_id)").substring(9,rs.getString("max(inv_id)").length()));
                 id++;
-                return "INV"+now.format(format)+String.format("%03d",id);
+                return "INV"+dateNow+String.format("%03d",id);
               }
               
           }                 
@@ -86,26 +88,32 @@ public class InvoiceDAO {
             pst.executeUpdate();
         }
     }
- /*   public List<Invoice> getInvoiceByDate(LocalDate date) throws ClassNotFoundException, SQLException{
-        List<Invoice> invs = new ArrayList<>();
-        String sql = "SELECT * FROM invoice where date(inv_date) = ?";
-        try (PreparedStatement pst=getConnect().prepareStatement(sql)) {
-            pst.setDate(1,Date.valueOf(date));
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                Invoice inv = extractInvoice(rs);
-                invs.add(inv);
+    public List<Invoice> getInvoicesByDate(java.util.Date from, java.util.Date to) throws ClassNotFoundException {
+        List<Invoice> list = new ArrayList<>();
+        String sql = "SELECT inv_id, cus_id, inv_date, ticket_subtotal, service_subtotal,discount,inv_total " +
+                     "FROM invoice " +
+                     "WHERE inv_date BETWEEN ? AND ? " +
+                     "ORDER BY inv_date DESC";
+
+        try (Connection conn = Database.getDB().connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+           
+            ps.setDate(1, new java.sql.Date(from.getTime()));
+            ps.setDate(2, new java.sql.Date(to.getTime()));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Invoice stat = extractInvoice(rs);
+                    list.add(stat);
+                }
             }
-        }        
-        return invs;
-    }    
-    public double getRevenueByDate(LocalDate date) throws ClassNotFoundException, SQLException{
-        double total=0;
-        for(Invoice inv:getInvoiceByDate(date)){
-            total+=inv.getTotal();
+        } catch (SQLException e) {
+            System.err.println("Lỗi khi lấy hóa đơn theo ngày: " + e.getMessage());
+            e.printStackTrace();
         }
-        return total;
-    }*/
+        return list;
+    }
     public List<Object[]> getRevenueByDate() throws ClassNotFoundException, SQLException{      
         String sql = "SELECT DATE(inv_date) as date , SUM(inv_total) as revenue FROM  invoice GROUP BY DATE(inv_date) ORDER BY DATE(inv_date)";
         List<Object[]> results=new ArrayList<>();
@@ -165,6 +173,7 @@ public class InvoiceDAO {
         inv.setDate(rs.getTimestamp("inv_date"));
         inv.setTicket_sub(rs.getDouble("ticket_subtotal"));
         inv.setService_sub(rs.getDouble("service_subtotal"));
+        inv.setDiscount(rs.getDouble("discount"));
         inv.setTotal(rs.getDouble("inv_total"));
         return inv;
     }

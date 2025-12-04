@@ -23,30 +23,30 @@ public class ShowtimeDAO {
     }
     // Thêm suất chiếu mới
     public void addShowtime(Showtime showtime) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO showtime (Show_ID, Mov_ID, Theater_ID, Show_date, Start_time, End_time, Show_price) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO showtime (Show_ID, Mov_ID, Theater_ID, Show_date, Start_time, Show_price) VALUES (?, ?, ?, ?, ?,?)";
         try (PreparedStatement pst = getConnect().prepareStatement(sql)) {
             pst.setString(1, showtime.getId());
             pst.setString(2, showtime.getMovie().getId());
             pst.setString(3, showtime.getRoom().getId());
             pst.setDate(4, Date.valueOf(showtime.getDate()));
             pst.setTime(5, Time.valueOf(showtime.getStart_time()));
-            pst.setTime(6, Time.valueOf(showtime.getEnd_time()));
-            pst.setDouble(7, showtime.getShow_price());
+            //pst.setTime(6, Time.valueOf(showtime.getEnd_time()));
+            pst.setDouble(6, showtime.getShow_price());
             pst.executeUpdate();
         }
     }
 
     // Sửa suất chiếu
     public void editShowtime(Showtime showtime) throws SQLException, ClassNotFoundException {
-        String sql = "UPDATE showtime SET Mov_ID=?, Theater_ID=?, Show_date=?, Start_time=?, End_time=?, Show_price=? WHERE Show_ID=?";
+        String sql = "UPDATE showtime SET Mov_ID=?, Theater_ID=?, Show_date=?, Start_time=?, Show_price=? WHERE Show_ID=?";
         try (PreparedStatement pst = getConnect().prepareStatement(sql)) {
             pst.setString(1, showtime.getMovie().getId());
             pst.setString(2, showtime.getRoom().getId());
             pst.setDate(3, Date.valueOf(showtime.getDate()));
             pst.setTime(4, Time.valueOf(showtime.getStart_time()));
-            pst.setTime(5, Time.valueOf(showtime.getEnd_time()));
-            pst.setDouble(6, showtime.getShow_price());
-            pst.setString(7, showtime.getId());
+            //pst.setTime(5, Time.valueOf(showtime.getEnd_time()));
+            pst.setDouble(5, showtime.getShow_price());
+            pst.setString(6, showtime.getId());
             pst.executeUpdate();
         }
     }

@@ -116,6 +116,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Th&#x1ed1;ng k&#xea; h&#xf3;a &#x111;&#x1a1;n"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="reportBtnActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="ticketBtn">
           <Properties>

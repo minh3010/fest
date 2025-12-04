@@ -137,6 +137,12 @@ public class ShowtimeGUI extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tableShowtime);
 
+        MovieComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MovieComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -265,6 +271,7 @@ public class ShowtimeGUI extends javax.swing.JFrame {
             ClearForm();
         }catch(SQLException | ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(this,"Lỗi thêm suất chiếu");
+            ex.printStackTrace();
         }
     }//GEN-LAST:event_addBtnActionPerformed
 
@@ -326,15 +333,21 @@ public class ShowtimeGUI extends javax.swing.JFrame {
         }        
     }//GEN-LAST:event_deleteBtnActionPerformed
 
+    private void MovieComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MovieComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_MovieComboBoxActionPerformed
+
     /**
      * @param args the command line arguments
      */
     private void loadMovie(){
         try {
             MovieComboBox.removeAllItems();
-            List<Movie> movies = movieDAO.findAll();
+            List<Movie> movies = movieDAO.findAll();           
             for (Movie movie : movies) {
-                MovieComboBox.addItem(movie.getId() + " - " + movie.getTitle());
+               if(movie.isShowing()==true){ 
+                 MovieComboBox.addItem(movie.getId() + " - " + movie.getTitle());
+               } 
             }
         } catch(SQLException | ClassNotFoundException ex){
             JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
