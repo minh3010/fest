@@ -606,7 +606,17 @@ public class TicketSale extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    private void setTotalPrice(Double price){
+    private void setTicketPrice(){
+       ticketLabel.setText(String.valueOf(ticketPrice)); 
+       ticket2Label.setText(String.valueOf(ticketPrice)); 
+       ticket3Label.setText("Giá vé: "+String.valueOf(ticketPrice));  
+    }
+    private void setServicePrice(){
+       serviceLabel.setText(String.valueOf(servicePrice)); 
+       service2Label.setText(String.valueOf(servicePrice)); 
+       service3Label.setText("Giá dịch vụ: "+String.valueOf(servicePrice));  
+    }    
+    private void setTotalPrice(){
        totalLabel.setText(String.valueOf(totalPrice)); 
        total2Label.setText(String.valueOf(totalPrice)); 
        total3Label.setText("Thành tiền: "+String.valueOf(totalPrice));  
@@ -681,16 +691,18 @@ public class TicketSale extends javax.swing.JFrame {
           }
         }
         SalePane.setSelectedIndex(1);
-        ticket2Label.setText(String.valueOf(ticketPrice)); 
-        total2Label.setText(String.valueOf(totalPrice)); 
+       // ticket2Label.setText(String.valueOf(ticketPrice)); 
+        //total2Label.setText(String.valueOf(totalPrice));
+        setTicketPrice();
+        setTotalPrice();
         loadServiceToTable();
     }//GEN-LAST:event_ToServiceBtnActionPerformed
 
     private void ToTicketBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ToTicketBtnActionPerformed
         SalePane.setSelectedIndex(0);
-        ticketLabel.setText(String.valueOf(ticketPrice));
-        serviceLabel.setText(String.valueOf(servicePrice));
-        totalLabel.setText(String.valueOf(totalPrice));         
+        setTicketPrice();// ticketLabel.setText(String.valueOf(ticketPrice)); 
+        setServicePrice();// serviceLabel.setText(String.valueOf(servicePrice));
+        setTotalPrice();// totalLabel.setText(String.valueOf(totalPrice));         
     }//GEN-LAST:event_ToTicketBtnActionPerformed
 
     private void ToInvoiceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ToInvoiceBtnActionPerformed
@@ -712,29 +724,32 @@ public class TicketSale extends javax.swing.JFrame {
         }
         if(selectedCustomer!=null){
            cusLabel.setText("Khách hàng:"+selectedCustomer.getCusName()+" - "+selectedCustomer.getCusPoint());
-        }              
+        }
+        else{
+            cusLabel.setText("Khách hàng:null");
+        }
         movieLabel.setText("Tên phim:"+selectedShowtime.getMovie().getTitle());
         showtimeLabel.setText("Suất chiếu:"+selectedShowtime.getStart_time()+"-"+selectedShowtime.getEnd_time());
         seatLabel.setText("Ghế:"+sb.toString().trim());
-        ticket3Label.setText("Giá vé: "+String.valueOf(ticketPrice));
-        service3Label.setText("Giá dịch vụ: "+String.valueOf(servicePrice));
-        total3Label.setText("Thành tiền: "+String.valueOf(totalPrice));          
+        setTicketPrice(); //ticket3Label.setText("Giá vé: "+String.valueOf(ticketPrice));
+        setServicePrice();// service3Label.setText("Giá dịch vụ: "+String.valueOf(servicePrice));
+        setTotalPrice();// total3Label.setText("Thành tiền: "+String.valueOf(totalPrice));          
     }//GEN-LAST:event_ToInvoiceBtnActionPerformed
     private void createNewCustomer(){
         JTextField cusId=new JTextField();
         JTextField cusName=new JTextField();
         JTextField cusPhone=new JTextField();
         JTextField cusEmail=new JTextField();
-        JPanel cusPanel=new JPanel(new GridLayout(4,2,5,5));
-        cusPanel.add(new JLabel("Mã KH:"));
-        cusPanel.add(cusId);
-        cusPanel.add(new JLabel("Tên:"));
-        cusPanel.add(cusName);
-        cusPanel.add(new JLabel("Số đt:"));
-        cusPanel.add(cusPhone);
-        cusPanel.add(new JLabel("Email:"));
-        cusPanel.add(cusEmail);
-        int result = JOptionPane.showConfirmDialog(this, cusPanel, "Thêm khách hàng mới",
+        JPanel newCusPanel=new JPanel(new GridLayout(4,2,5,5));
+        newCusPanel.add(new JLabel("Mã KH:"));
+        newCusPanel.add(cusId);
+        newCusPanel.add(new JLabel("Tên:"));
+        newCusPanel.add(cusName);
+        newCusPanel.add(new JLabel("Số đt:"));
+        newCusPanel.add(cusPhone);
+        newCusPanel.add(new JLabel("Email:"));
+        newCusPanel.add(cusEmail);
+        int result = JOptionPane.showConfirmDialog(this, newCusPanel, "Thêm khách hàng mới",
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
         if (result == JOptionPane.OK_OPTION) {
             try {
@@ -770,6 +785,8 @@ public class TicketSale extends javax.swing.JFrame {
         String phone=phoneNumField.getText().trim();
         if(phoneNumField.getText().isEmpty()){
            cusPanel.removeAll();
+           cusPanel.revalidate();
+           cusPanel.repaint();            
            selectedCustomer=null;
            return;
         }
@@ -821,6 +838,10 @@ public class TicketSale extends javax.swing.JFrame {
     }//GEN-LAST:event_confirmBtnActionPerformed
 
     private void tradeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tradeBtnActionPerformed
+        if(selectedCustomer==null){
+           JOptionPane.showMessageDialog(this,"Khách vãng lai");
+           return;        
+        }
         if(pointField.getText().isEmpty()){
            JOptionPane.showMessageDialog(this,"Hãy nhập điểm");
            return;           
@@ -838,7 +859,7 @@ public class TicketSale extends javax.swing.JFrame {
            totalPrice=totalPrice-discountPrice;
            cusLabel.setText("Khách hàng:"+selectedCustomer.getCusName()+" - "+selectedCustomer.getCusPoint());
            discountLabel.setText("Giảm giá:"+discountPrice);
-           setTotalPrice(totalPrice);
+           setTotalPrice();
         }      
     }//GEN-LAST:event_tradeBtnActionPerformed
     
@@ -854,9 +875,9 @@ public class TicketSale extends javax.swing.JFrame {
             seatPanel.removeAll();
             seatPanel.setLayout(new java.awt.GridLayout(room.getRowNum(),room.getSeatPerRow(),5,5));
             for (int i = 0; i < room.getRowNum(); i++) {
-                char hang = (char) ('A' + i);
+                char row = (char) ('A' + i);
                 for (int j = 1; j <= room.getSeatPerRow(); j++) {
-                    String seatNum= "" + hang + j;
+                    String seatNum= "" + row + j;
                     JButton btnSeat = new JButton(seatNum);
 
             if (!show.seatAvailable(seatNum)) {
@@ -887,8 +908,8 @@ public class TicketSale extends javax.swing.JFrame {
         bookingSeat.add(btn.getText());
         ticketPrice+=show.getShow_price();
         totalPrice+=show.getShow_price();
-        ticketLabel.setText(String.valueOf(ticketPrice));
-        totalLabel.setText(String.valueOf(totalPrice));
+        setTicketPrice();//ticketLabel.setText(String.valueOf(ticketPrice));
+        setTotalPrice();//totalLabel.setText(String.valueOf(totalPrice));
         //txtSelectedSeats.append(btn.getText() + " ");
       }
       else if (btn.getBackground().equals(Color.GREEN)) {
@@ -896,8 +917,8 @@ public class TicketSale extends javax.swing.JFrame {
         bookingSeat.remove(btn.getText());
         ticketPrice-=show.getShow_price();
         totalPrice-=show.getShow_price();
-        ticketLabel.setText(String.valueOf(ticketPrice));     
-        totalLabel.setText(String.valueOf(totalPrice));        
+        setTotalPrice();//ticketLabel.setText(String.valueOf(ticketPrice));     
+        setTicketPrice();//totalLabel.setText(String.valueOf(totalPrice));        
         //String ghe = btn.getText() + " ";
         //txtSelectedSeats.setText(
          //   txtSelectedSeats.getText().replace(ghe, "")
@@ -911,9 +932,9 @@ public class TicketSale extends javax.swing.JFrame {
         servicePrice=0.;
         discountPrice=0.;
         totalPrice=0.;
-        ticketLabel.setText(String.valueOf(ticketPrice));
-        serviceLabel.setText(String.valueOf(servicePrice));
-        totalLabel.setText(String.valueOf(totalPrice));
+        setTicketPrice();//ticketLabel.setText(String.valueOf(ticketPrice));
+        setServicePrice();//serviceLabel.setText(String.valueOf(servicePrice));
+        setTotalPrice();//totalLabel.setText(String.valueOf(totalPrice));
         phoneNumField.setText("");
         cusPanel.removeAll();
     }

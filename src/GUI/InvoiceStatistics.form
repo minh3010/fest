@@ -51,14 +51,14 @@
                   <Component id="Fromdate" min="-2" pref="64" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="startDateField" alignment="0" min="-2" pref="71" max="-2" attributes="0"/>
-                      <Component id="mota" alignment="0" min="-2" pref="84" max="-2" attributes="0"/>
+                      <Component id="mota" min="-2" pref="84" max="-2" attributes="0"/>
+                      <Component id="startDateField" min="-2" pref="75" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="68" max="32767" attributes="0"/>
                   <Component id="Todate" min="-2" pref="64" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="endDateField" min="-2" pref="71" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
+                  <Component id="endDateField" min="-2" pref="75" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                   <Component id="btnThongKe" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="130" max="-2" attributes="0"/>
               </Group>

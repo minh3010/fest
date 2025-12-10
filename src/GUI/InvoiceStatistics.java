@@ -29,7 +29,7 @@ public class InvoiceStatistics extends javax.swing.JFrame {
         initComponents();
         invDAO=new InvoiceDAO();
         loadData();
-   
+        invTable.getColumnModel().getColumn(2).setPreferredWidth(100);
     }
     
    private void loadData() {
@@ -138,13 +138,13 @@ public class InvoiceStatistics extends javax.swing.JFrame {
                 .addComponent(Fromdate, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(startDateField, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(mota, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(mota, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(startDateField, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
                 .addComponent(Todate, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(endDateField, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(34, 34, 34)
+                .addComponent(endDateField, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
                 .addComponent(btnThongKe)
                 .addGap(130, 130, 130))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -197,19 +197,19 @@ public class InvoiceStatistics extends javax.swing.JFrame {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"); 
 
         if (fromText.isEmpty() || toText.isEmpty()) {
-            list = invDAO.getAllInvoice();
+            loadData();
             return;
         } 
         Date from = new SimpleDateFormat("dd-MM-yyyy").parse(fromText);
         Date to = new SimpleDateFormat("dd-MM-yyyy").parse(toText);
             
-        java.util.Calendar cal = java.util.Calendar.getInstance();
+  /*      java.util.Calendar cal = java.util.Calendar.getInstance();
         cal.setTime(to);
         cal.set(java.util.Calendar.HOUR_OF_DAY, 23);
         cal.set(java.util.Calendar.MINUTE, 59);
         cal.set(java.util.Calendar.SECOND, 59);
-        Date toEndOfDay = cal.getTime();
-        list = invDAO.getInvoicesByDate(from, toEndOfDay);
+        Date toEndOfDay = cal.getTime();*/
+        list = invDAO.getInvoicesByDate(from, to);
         DefaultTableModel model = (DefaultTableModel) invTable.getModel();
         model.setRowCount(0);      
         for (Invoice i : list) {
@@ -232,7 +232,7 @@ public class InvoiceStatistics extends javax.swing.JFrame {
             });
         }        
         
-       }catch(ClassNotFoundException | SQLException | ParseException ex){
+       }catch(ClassNotFoundException | ParseException ex){
           JOptionPane.showMessageDialog(this, 
             "Lỗi tải dữ liệu: " + ex.getMessage() + "\nXem console để biết chi tiết!", 
             "Lỗi", JOptionPane.ERROR_MESSAGE);

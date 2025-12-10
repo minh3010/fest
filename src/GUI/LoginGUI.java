@@ -38,6 +38,7 @@ public class LoginGUI extends javax.swing.JFrame {
         passwordField = new javax.swing.JPasswordField();
         LoginBtn = new javax.swing.JButton();
         ExitBtn = new javax.swing.JButton();
+        passwordCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -69,6 +70,13 @@ public class LoginGUI extends javax.swing.JFrame {
             }
         });
 
+        passwordCheckBox.setText("Hiển thị");
+        passwordCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordCheckBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -83,13 +91,15 @@ public class LoginGUI extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(usernameField, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-                            .addComponent(passwordField)))
+                            .addComponent(passwordField))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(passwordCheckBox))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(133, 133, 133)
                         .addComponent(ExitBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(101, 101, 101)
                         .addComponent(LoginBtn)))
-                .addContainerGap(177, Short.MAX_VALUE))
+                .addContainerGap(133, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -101,7 +111,8 @@ public class LoginGUI extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtPassword)
-                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(passwordCheckBox))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(ExitBtn)
@@ -117,9 +128,9 @@ public class LoginGUI extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(42, Short.MAX_VALUE)
+                .addContainerGap(52, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -136,9 +147,8 @@ public class LoginGUI extends javax.swing.JFrame {
         String username=usernameField.getText().trim();
         String password=new String(passwordField.getPassword());
         if(username.isEmpty()|| password.isEmpty()){
-            JOptionPane.showMessageDialog(this,"nhập lại","Lỗi",JOptionPane.ERROR_MESSAGE);
-            return;
-            
+            JOptionPane.showMessageDialog(this,"nhập đủ thông tin","Lỗi",JOptionPane.ERROR_MESSAGE);
+            return;           
         }
         try{
             Connection con=Database.getDB().connect();
@@ -178,6 +188,14 @@ public class LoginGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_passwordFieldActionPerformed
 
+    private void passwordCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordCheckBoxActionPerformed
+        if(passwordCheckBox.isSelected()){
+           passwordField.setEchoChar((char)0);
+        }else{
+           passwordField.setEchoChar('*');
+        }      
+    }//GEN-LAST:event_passwordCheckBoxActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -207,6 +225,7 @@ public class LoginGUI extends javax.swing.JFrame {
     private javax.swing.JButton ExitBtn;
     private javax.swing.JButton LoginBtn;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JCheckBox passwordCheckBox;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JLabel txtPassword;
     private javax.swing.JLabel txtUsername;

@@ -92,7 +92,7 @@ public class InvoiceDAO {
         List<Invoice> list = new ArrayList<>();
         String sql = "SELECT inv_id, cus_id, inv_date, ticket_subtotal, service_subtotal,discount,inv_total " +
                      "FROM invoice " +
-                     "WHERE inv_date BETWEEN ? AND ? " +
+                     "WHERE Date(inv_date) BETWEEN ? AND ? " +
                      "ORDER BY inv_date DESC";
 
         try (Connection conn = Database.getDB().connect();
