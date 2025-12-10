@@ -72,6 +72,7 @@ public class ShowtimeDAO {
         }
         return showtimes;
     }
+
     public List<Showtime> getShowtimesByDate(Date date) throws SQLException, ClassNotFoundException {
         List<Showtime> showtimes = new ArrayList<>();
         String sql = "select show_id,s.mov_id,s.theater_id,theater_name,show_date,start_time,show_price from showtime s "

@@ -58,7 +58,17 @@ public class RoomDAO {
         }
         return Optional.empty();
     }
-
+    public Room getRoomByStartTime(String date) throws SQLException, ClassNotFoundException{
+        String sql = "select * from theater t join showtime s on s.Theater_ID=t.Theater_ID where start_time=?";
+        try (PreparedStatement pst = getConnect().prepareStatement(sql)){
+            pst.setString(1,date);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+               return extractRoom(rs);
+            }
+        }
+        return null;    
+    }
     public List<Room> findAll() throws SQLException, ClassNotFoundException {
         List<Room> rooms = new ArrayList<>();
         String sql = "SELECT * FROM theater ORDER BY theater_name";

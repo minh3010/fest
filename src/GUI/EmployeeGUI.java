@@ -19,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
 public class EmployeeGUI extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EmployeeGUI.class.getName());
-    private EmployeeDAO empDAO;
+    private final EmployeeDAO empDAO;
     private DefaultTableModel model;
     /**
      * Creates new form EmployeeGUI
@@ -35,7 +35,7 @@ public class EmployeeGUI extends javax.swing.JFrame {
         });        
     }
     
-    public void getTable(){
+    private void getTable(){
         try {
             List<Employee> emps=empDAO.getEmployee();
             model=(DefaultTableModel) empTable.getModel();

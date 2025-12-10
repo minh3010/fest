@@ -1,11 +1,11 @@
 
 package GUI;
-import cinema.Database;
 import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import entity.Customer;
 import DAO.CustomerDAO;
+import java.util.List;
 /**
  *
  * @author Hoang Hiep
@@ -29,34 +29,23 @@ public class CustomerGUI extends javax.swing.JFrame {
         });         
     }
 
-    private Connection getConnection() {
-        try {
-            return Database.getDB().connect();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Không thể kết nối CSDL!\n" + e.getMessage());
-            return null;
-        }
-    }
-
     // Load tất cả khách hàng
     private void loadData() {
         model = (DefaultTableModel) custable.getModel();
         model.setRowCount(0);
-        try (Connection conn = getConnection()) {
-            if (conn == null) return;
-            String sql = "SELECT * FROM Customer";
-            Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-            while (rs.next()) {
+        try {
+            List<Customer> customers=cusDAO.getAllCustomers();
+            for(Customer cus:customers) {
                 model.addRow(new Object[]{
-                        rs.getString("Cus_ID"),
-                        rs.getString("Cus_name"),
-                        rs.getString("Cus_phone"),
-                        rs.getString("Cus_email")
+                        cus.getCusID(),
+                        cus.getCusName(),
+                        cus.getCusPhone(),
+                        cus.getCusEmail(),
+                        cus.getCusPoint()
                 });
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu khách hàng:\n" + e.getMessage());
+        } catch (SQLException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu khách hàng:\n" + ex.getMessage());
         }
     }
     private void clearForm() {
@@ -64,6 +53,7 @@ public class CustomerGUI extends javax.swing.JFrame {
         CusNumField.setText("");
         CusPhoneField.setText("");
         CusEmailField.setText("");
+        CusPointField.setText("");
         SearchField.setText("");
     }
 
@@ -94,6 +84,8 @@ public class CustomerGUI extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         SearchField = new javax.swing.JTextField();
         SearchBtn = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        CusPointField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("QUẢN LÝ KHÁCH HÀNG");
@@ -153,18 +145,18 @@ public class CustomerGUI extends javax.swing.JFrame {
 
         custable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Mã khách hàng", "Tên khách hàng", "Số điện thoại", "Email"
+                "Mã khách hàng", "Tên khách hàng", "Số điện thoại", "Email", "Điểm"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -182,12 +174,23 @@ public class CustomerGUI extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setText("ĐIỂM THÀNH VIÊN");
+
+        CusPointField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CusPointFieldActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(97, 97, 97)
+                        .addComponent(SearchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(22, 22, 22)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,32 +199,36 @@ public class CustomerGUI extends javax.swing.JFrame {
                                 .addComponent(AddBtn)
                                 .addGap(32, 32, 32)
                                 .addComponent(EditBtn)
-                                .addGap(38, 38, 38)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(DeleteBtn))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(CusEmailField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(SearchField, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(CusNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(CusNumField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(CusPhoneField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(97, 97, 97)
-                        .addComponent(SearchBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(CusPointField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(CusEmailField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(SearchField, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(CusNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(CusNumField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(jPanel1Layout.createSequentialGroup()
+                                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addComponent(CusPhoneField, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGap(0, 9, Short.MAX_VALUE)))))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(15, Short.MAX_VALUE))
@@ -248,12 +255,16 @@ public class CustomerGUI extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(CusEmailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(31, 31, 31)
+                        .addGap(10, 10, 10)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(EditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(CusPointField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(DeleteBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(EditBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(AddBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(33, 33, 33)
+                        .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(SearchField, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -267,8 +278,9 @@ public class CustomerGUI extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(39, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(20, 20, 20)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(19, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -329,9 +341,11 @@ public class CustomerGUI extends javax.swing.JFrame {
                         CusNumField.getText().trim(),  // Mã khách
                         CusNameField.getText().trim(),  // Tên khách
                         CusPhoneField.getText().trim(),  // SĐT
-                        CusEmailField.getText().trim()  // Email
+                        CusEmailField.getText().trim(),  // Email
+                        Integer.parseInt(CusPointField.getText().trim())
             );
-            cusDAO.updateCustomer(cus);           
+            cusDAO.updateCustomer(cus);
+            cusDAO.updatePoint(cus);
             JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thành công!");
             loadData();
             clearForm();
@@ -373,31 +387,33 @@ public class CustomerGUI extends javax.swing.JFrame {
         }
         model = (DefaultTableModel) custable.getModel();
         model.setRowCount(0);
-        try (Connection conn = getConnection()) {
-            if (conn == null) return;
-            String sql = "SELECT * FROM Customer WHERE Cus_phone LIKE ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, "%" + keyword + "%");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
+        try {
+            List<Customer> customers=cusDAO.searchByPhone(keyword);
+            for(Customer cus:customers) {
                 model.addRow(new Object[]{
-                        rs.getString("Cus_ID"),
-                        rs.getString("Cus_name"),
-                        rs.getString("Cus_phone"),
-                        rs.getString("Cus_email")
+                        cus.getCusID(),
+                        cus.getCusName(),
+                        cus.getCusPhone(),
+                        cus.getCusEmail(),
+                        cus.getCusPoint()
                 });
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm khách hàng:\n" + e.getMessage());
+        } catch (SQLException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm khách hàng:\n" + ex.getMessage());
         }
     }//GEN-LAST:event_SearchBtnActionPerformed
+
+    private void CusPointFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CusPointFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CusPointFieldActionPerformed
     private void loadSelected(){
         int selectedRow = custable.getSelectedRow();
         if (selectedRow != -1) {
             CusNumField.setText((String) model.getValueAt(selectedRow, 0));
             CusNameField.setText((String) model.getValueAt(selectedRow, 1));
             CusPhoneField.setText((String) model.getValueAt(selectedRow, 2));
-            CusEmailField.setText((String) model.getValueAt(selectedRow, 3));         
+            CusEmailField.setText((String) model.getValueAt(selectedRow, 3));
+            CusPointField.setText(String.valueOf(model.getValueAt(selectedRow, 4))); 
         }      
     }
     /**
@@ -431,6 +447,7 @@ public class CustomerGUI extends javax.swing.JFrame {
     private javax.swing.JTextField CusNameField;
     private javax.swing.JTextField CusNumField;
     private javax.swing.JTextField CusPhoneField;
+    private javax.swing.JTextField CusPointField;
     private javax.swing.JButton DeleteBtn;
     private javax.swing.JButton EditBtn;
     private javax.swing.JButton SearchBtn;
@@ -441,6 +458,7 @@ public class CustomerGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables

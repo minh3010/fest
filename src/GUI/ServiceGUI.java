@@ -8,6 +8,7 @@ import cinema.Database;
 import DAO.ServiceDAO;
 import entity.Service;
 import java.sql.*;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -18,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
 public class ServiceGUI extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ServiceGUI.class.getName());
-    private ServiceDAO serviceDAO;
+    private final ServiceDAO serviceDAO;
     private DefaultTableModel model;
     /**
      * Creates new form ServiceGUI
@@ -27,6 +28,7 @@ public class ServiceGUI extends javax.swing.JFrame {
         serviceDAO=new ServiceDAO();
         initComponents();
         getTable();
+        tableService.getColumnModel().getColumn(1).setPreferredWidth(100);
         tableService.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && tableService.getSelectedRow() != -1) {
                 loadSelected();
@@ -261,17 +263,13 @@ public class ServiceGUI extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_deleteBtnActionPerformed
-    private void getTable(){
-       String sql="select * from service";
-       
+    private void getTable(){     
        try{
-          Connection con=Database.getDB().connect();
-          PreparedStatement pst=con.prepareStatement(sql);
-          ResultSet rs=pst.executeQuery();
+          List<Service> services=serviceDAO.findAll();
           model=(DefaultTableModel)tableService.getModel();
           model.setRowCount(0);
-          while(rs.next()){
-             model.addRow(new Object[]{rs.getString(1),rs.getString(2),rs.getDouble(3),rs.getInt(4)});
+          for(Service ser:services){
+             model.addRow(new Object[]{ser.getId(),ser.getName(),ser.getPrice(),ser.getQuantity()});
           }
        }catch(SQLException | ClassNotFoundException ex){
           JOptionPane.showMessageDialog(this,"Lỗi");

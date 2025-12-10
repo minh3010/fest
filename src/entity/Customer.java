@@ -20,6 +20,13 @@ public class Customer {
         this.cusEmail = cusEmail;
         this.cusPoint=0;
     }
+    public Customer(String cusID, String cusName, String cusPhone, String cusEmail,int cusPoint) {
+        this.cusID = cusID;
+        this.cusName = cusName;
+        this.cusPhone = cusPhone;
+        this.cusEmail = cusEmail;
+        this.cusPoint=cusPoint;
+    }    
     public void addPoint(Invoice inv){
        cusPoint+=(int)(inv.getTotal()/1000);
     }

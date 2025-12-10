@@ -12,6 +12,7 @@ import java.sql.*;
 import cinema.Database;
 import DAO.MovieDAO;
 import entity.Movie;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 public class MovieGUI extends javax.swing.JFrame {
@@ -169,8 +170,8 @@ public class MovieGUI extends javax.swing.JFrame {
                             .addComponent(ShowingCheckBox)
                             .addComponent(directorField, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
                             .addComponent(durationField)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 436, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(8, 8, 8)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(addBtn, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(editBtn, javax.swing.GroupLayout.Alignment.LEADING)
@@ -247,17 +248,13 @@ public class MovieGUI extends javax.swing.JFrame {
     private void genreFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genreFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_genreFieldActionPerformed
-    private void getTable(){
-       String sql="select * from movie";
-       
+    private void getTable(){      
        try{
-          Connection con=Database.getDB().connect();
-          PreparedStatement pst=con.prepareStatement(sql);
-          ResultSet rs=pst.executeQuery();
+          List<Movie> movies=movieDAO.findAll();
           model=(DefaultTableModel)tableMovie.getModel();
           model.setRowCount(0);
-          while(rs.next()){
-             model.addRow(new Object[]{rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getInt(5),rs.getBoolean(6)});
+          for(Movie mov:movies){
+             model.addRow(new Object[]{mov.getId(),mov.getTitle(),mov.getGenre(),mov.getDirector(),mov.getDuration(),mov.isShowing()});
           }
        }catch(SQLException | ClassNotFoundException ex){
           JOptionPane.showMessageDialog(this,"Lỗi");

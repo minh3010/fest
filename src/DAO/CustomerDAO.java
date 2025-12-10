@@ -30,7 +30,8 @@ public class CustomerDAO {
                         rs.getString("Cus_ID"),
                         rs.getString("Cus_name"),
                         rs.getString("Cus_phone"),
-                        rs.getString("Cus_email")
+                        rs.getString("Cus_email"),
+                        rs.getInt("Cus_point")
                 ));
             }
         } catch (SQLException e) {
@@ -40,7 +41,7 @@ public class CustomerDAO {
     }
 
     public boolean insertCustomer(Customer c) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO Customer (Cus_ID, Cus_name, Cus_phone, Cus_email) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Customer (Cus_ID, Cus_name, Cus_phone, Cus_email,Cus_point) VALUES (?, ?, ?, ?,0)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -137,7 +138,8 @@ public class CustomerDAO {
                         rs.getString("Cus_ID"),
                         rs.getString("Cus_name"),
                         rs.getString("Cus_phone"),
-                        rs.getString("Cus_email")
+                        rs.getString("Cus_email"),
+                        rs.getInt("Cus_point")
                 ));
             }
 

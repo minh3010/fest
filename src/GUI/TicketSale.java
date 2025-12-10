@@ -648,12 +648,9 @@ public class TicketSale extends javax.swing.JFrame {
             bookingSeat.removeAll(bookingSeat);
             String showDate = ((String) selected).split(" - ")[0];
             selectedShowtime=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
-            String sql = "select * from showtime s join theater t on s.Theater_ID=t.Theater_ID where start_time=?";
-            PreparedStatement pst = Database.getDB().connect().prepareStatement(sql);
-            pst.setString(1, showDate);
-            ResultSet rs = pst.executeQuery();
-            while(rs.next()){
-                 roomLabel.setText(rs.getString("theater_id") + " - " + rs.getString("theater_name"));
+            Room selectedRoom=roomDAO.getRoomByStartTime(showDate);
+            if(selectedRoom != null){
+                 roomLabel.setText(selectedRoom.getId() + " - " + selectedRoom.getName());
             }
             getSeatTable();
             clear();
@@ -871,7 +868,7 @@ public class TicketSale extends javax.swing.JFrame {
         String showDate = ((String) ShowtimeComboBox.getSelectedItem()).split(" - ")[0];
         try {
             Room room=roomDAO.findById(roomId).orElse(null);
-            Showtime show=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
+            selectedShowtime=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
             seatPanel.removeAll();
             seatPanel.setLayout(new java.awt.GridLayout(room.getRowNum(),room.getSeatPerRow(),5,5));
             for (int i = 0; i < room.getRowNum(); i++) {
@@ -880,7 +877,7 @@ public class TicketSale extends javax.swing.JFrame {
                     String seatNum= "" + row + j;
                     JButton btnSeat = new JButton(seatNum);
 
-            if (!show.seatAvailable(seatNum)) {
+            if (!selectedShowtime.seatAvailable(seatNum)) {
                 btnSeat.setBackground(Color.LIGHT_GRAY);
                 btnSeat.setEnabled(false);
                 btnSeat.setToolTipText("Ghế đã được đặt");
@@ -977,31 +974,24 @@ public class TicketSale extends javax.swing.JFrame {
     }
     private void loadServiceToTable() {
     try {
-        Connection con = Database.getDB().connect();   
-        String sql = "SELECT * FROM Service";
-        PreparedStatement pst = con.prepareStatement(sql);
-        ResultSet rs = pst.executeQuery();
-
+        List<Service> services=serDAO.findAll();
         DefaultTableModel model = (DefaultTableModel) tblProduct.getModel();
         model.setRowCount(0);
 
-        while (rs.next()) {
-            String ma   = rs.getString("Service_ID");
-            String ten  = rs.getString("Service_name");
-            double gia  = rs.getDouble("Service_price");
-            int num=rs.getInt("service_quantity");
+        for(Service ser:services) {
+            String ma   = ser.getId();
+            String ten  = ser.getName();
+            double gia  = ser.getPrice();
+            int num     = ser.getQuantity();
             model.addRow(new Object[]{ma, ten, gia, num,0});
         }
         editor=new SpinnerEditor(tblProduct);
         TableColumn col = tblProduct.getColumnModel().getColumn(4);
         col.setCellEditor(editor);
         col.setCellRenderer(new SpinnerRenderer());
-        tblProduct.setRowHeight(35);                    
+        tblProduct.setRowHeight(35);
+        tblProduct.getColumnModel().getColumn(1).setPreferredWidth(100); 
         tblProduct.getColumnModel().getColumn(4).setPreferredWidth(100);         
-        rs.close();
-        pst.close();
-        con.close();
-
     } catch (SQLException |ClassNotFoundException ex) {
         JOptionPane.showMessageDialog(this, "Lỗi tải dịch vụ: " + ex.getMessage());
     }

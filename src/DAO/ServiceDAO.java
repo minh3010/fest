@@ -7,6 +7,8 @@ package DAO;
 import cinema.Database;
 import java.sql.*;
 import entity.Service;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author Lenovo
@@ -42,6 +44,18 @@ public class ServiceDAO {
             pst.executeUpdate();
         }
     }
+    public List<Service> findAll() throws SQLException, ClassNotFoundException {
+        List<Service> ser = new ArrayList<>();
+        String sql = "SELECT * FROM service";
+        try (Statement stmt = getConnect().createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                Service service = extractService(rs);
+                ser.add(service);
+            }
+        }
+        return ser;
+    }    
     public void updateQuantity(Service service,int quantity) throws SQLException, ClassNotFoundException{
         String sql="update service set service_quantity=? where service_id=?";
         int newQuantity=service.getQuantity()-quantity;

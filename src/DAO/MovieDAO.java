@@ -58,7 +58,7 @@ public class MovieDAO {
     }
     public List<Movie> findAll() throws SQLException, ClassNotFoundException {
         List<Movie> movies = new ArrayList<>();
-        String sql = "SELECT * FROM movie ORDER BY mov_title";
+        String sql = "SELECT * FROM movie ORDER BY mov_id";
         try (Statement stmt = getConnect().createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {

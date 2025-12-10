@@ -13,6 +13,7 @@ import entity.Room;
 import cinema.Database;
 import java.awt.HeadlessException;
 import java.sql.*;
+import java.util.List;
 import java.util.stream.IntStream;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -286,24 +287,16 @@ public class RoomGUI extends javax.swing.JFrame {
     private void IdFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IdFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_IdFieldActionPerformed
-    private void getRoom(){
-       String sql="select * from theater";
-       
+    private void getRoom(){      
        try{
-          Connection con=Database.getDB().connect();
-          PreparedStatement pst=con.prepareStatement(sql);
-          ResultSet rs=pst.executeQuery();
+          RoomComboBox.removeAllItems();
+          List<Room> rooms=roomDAO.findAll();
           model=(DefaultTableModel)TableRoom.getModel();
           model.setRowCount(0);
-          while(rs.next()){
-             model.addRow(new Object[]{rs.getString(1),rs.getString(2),rs.getInt(5)});
-             String name=rs.getString(2);
-             boolean exists = IntStream.range(0, RoomComboBox.getItemCount())
-                              .mapToObj(RoomComboBox::getItemAt)
-                              .anyMatch(item -> item.equals(name));
-             if(!exists){
-                RoomComboBox.addItem(name);
-             }
+          for(Room room:rooms){
+             model.addRow(new Object[]{room.getId(),room.getName(),room.getSeatCount()});
+             String id=room.getId();
+             RoomComboBox.addItem(id);
           }
        }catch(SQLException | ClassNotFoundException ex){
           JOptionPane.showMessageDialog(this,"Lỗi");
@@ -367,24 +360,19 @@ public class RoomGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_addBtnActionPerformed
 
     private void RoomComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RoomComboBoxActionPerformed
-          String name=(String)RoomComboBox.getSelectedItem();
-          String sql="select * from theater where theater_name=?";
-           
+          String name=(String)RoomComboBox.getSelectedItem();          
        try{
-          Connection con=Database.getDB().connect();
-          PreparedStatement pst=con.prepareStatement(sql);
-          pst.setString(1,name);
-          ResultSet rs=pst.executeQuery();
+          Room room=roomDAO.findById(name).orElse(null);
           roomModel=(DefaultTableModel)TableSeat.getModel();
           roomModel.setRowCount(0);
           roomModel.setColumnCount(0);
-          if(rs.next()){  
-          for (int j = 0; j < rs.getInt(4); j++) {
+          if(room != null){  
+          for (int j = 0; j < room.getSeatPerRow(); j++) {
             roomModel.addColumn(String.valueOf((char) ('A' + j)));
           }
-          for(int i=0;i<rs.getInt(3);i++){
-                Object[] row=new Object[rs.getInt(4)];
-                for(int j=0;j<rs.getInt(4);j++){               
+          for(int i=0;i<room.getRowNum();i++){
+                Object[] row=new Object[room.getSeatPerRow()];
+                for(int j=0;j<room.getSeatPerRow();j++){               
                     row[j]=(char)('A'+j)+String.valueOf(1+i);              
                 }
                 roomModel.addRow(row); 
