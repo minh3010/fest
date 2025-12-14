@@ -10,7 +10,6 @@ package GUI;
  */
 import entity.*;
 import DAO.*;
-import cinema.Database;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
@@ -59,7 +58,7 @@ public class TicketSale extends javax.swing.JFrame {
         invDAO=new InvoiceDAO();
         bookingSeat=new ArrayList();
         initComponents();
-        
+        loadServiceToTable();
         loadMovie();
     }
 
@@ -257,7 +256,7 @@ public class TicketSale extends javax.swing.JFrame {
                             .addGroup(ticketPanelLayout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(cusPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap())))
+                        .addContainerGap(35, Short.MAX_VALUE))))
         );
         ticketPanelLayout.setVerticalGroup(
             ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -284,7 +283,7 @@ public class TicketSale extends javax.swing.JFrame {
                             .addComponent(roomLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(seatPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(12, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ticketPanelLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(cusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -648,9 +647,9 @@ public class TicketSale extends javax.swing.JFrame {
             bookingSeat.removeAll(bookingSeat);
             String showDate = ((String) selected).split(" - ")[0];
             selectedShowtime=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
-            Room selectedRoom=roomDAO.getRoomByStartTime(showDate);
-            if(selectedRoom != null){
-                 roomLabel.setText(selectedRoom.getId() + " - " + selectedRoom.getName());
+            //Room selectedRoom=roomDAO.getRoomByStartTime(showDate);
+            if(selectedShowtime != null){
+                 roomLabel.setText(selectedShowtime.getRoom().getId() + " - " + selectedShowtime.getRoom().getName());
             }
             getSeatTable();
             clear();
@@ -692,11 +691,11 @@ public class TicketSale extends javax.swing.JFrame {
         //total2Label.setText(String.valueOf(totalPrice));
         setTicketPrice();
         setTotalPrice();
-        loadServiceToTable();
     }//GEN-LAST:event_ToServiceBtnActionPerformed
 
     private void ToTicketBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ToTicketBtnActionPerformed
         SalePane.setSelectedIndex(0);
+        
         setTicketPrice();// ticketLabel.setText(String.valueOf(ticketPrice)); 
         setServicePrice();// serviceLabel.setText(String.valueOf(servicePrice));
         setTotalPrice();// totalLabel.setText(String.valueOf(totalPrice));         
@@ -704,7 +703,7 @@ public class TicketSale extends javax.swing.JFrame {
 
     private void ToInvoiceBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ToInvoiceBtnActionPerformed
         SalePane.setSelectedIndex(2);
-        loadInvService();
+        loadInvService(tblProduct);
         StringBuilder sb = new StringBuilder();
         for (String s : bookingSeat) {
             if(bookingSeat.size()>1){
@@ -781,6 +780,11 @@ public class TicketSale extends javax.swing.JFrame {
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
         String phone=phoneNumField.getText().trim();
         if(phoneNumField.getText().isEmpty()){
+           int result = JOptionPane.showConfirmDialog(this, "Tạo mới khách hàng ?");
+           if(result==JOptionPane.OK_OPTION){
+             createNewCustomer();
+             return;              
+           }
            cusPanel.removeAll();
            cusPanel.revalidate();
            cusPanel.repaint();            
@@ -790,8 +794,12 @@ public class TicketSale extends javax.swing.JFrame {
         try{            
           Customer cus=cusDAO.findByPhone(phone).orElse(null);
           if(cus==null){
-            createNewCustomer();
-            return;
+           JOptionPane.showMessageDialog(this,"Khách hàng không tồn tại");
+           cusPanel.removeAll();
+           cusPanel.revalidate();
+           cusPanel.repaint();
+           selectedCustomer=null;
+           return;
           }
           selectedCustomer=cus;
           displayCus(cus);
@@ -864,11 +872,11 @@ public class TicketSale extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     private void getSeatTable(){
-        String roomId=((String) roomLabel.getText()).split(" - ")[0];
-        String showDate = ((String) ShowtimeComboBox.getSelectedItem()).split(" - ")[0];
-        try {
-            Room room=roomDAO.findById(roomId).orElse(null);
-            selectedShowtime=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
+        //String roomId=((String) roomLabel.getText()).split(" - ")[0];
+        //String showDate = ((String) ShowtimeComboBox.getSelectedItem()).split(" - ")[0];
+        try {            
+        //    selectedShowtime=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
+            Room room=roomDAO.findById(selectedShowtime.getRoom().getId()).orElse(null);
             seatPanel.removeAll();
             seatPanel.setLayout(new java.awt.GridLayout(room.getRowNum(),room.getSeatPerRow(),5,5));
             for (int i = 0; i < room.getRowNum(); i++) {
@@ -948,30 +956,35 @@ public class TicketSale extends javax.swing.JFrame {
         try {
             MovieComboBox.removeAllItems();
             List<Object[]> results = movieDAO.findMovieByShowtime();
+            DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) MovieComboBox.getModel();
             LocalDate date=LocalDate.now();       
             for (Object[] obj : results) {
-               if(obj[2].equals(date)){ 
-                MovieComboBox.addItem(obj[0] + " - " + obj[1]);
+               if(model.getIndexOf(obj[0] + " - " + obj[1])!=-1){ 
+                  continue;
                }
+               if(obj[2].equals(date)){ 
+                  MovieComboBox.addItem(obj[0] + " - " + obj[1]);
+                }
             }           
         } catch(SQLException | ClassNotFoundException ex){
             JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
         }
     }
-    private void loadInvService(){
+    private void loadInvService(JTable tbl){
         DefaultTableModel model = (DefaultTableModel) serInvTable.getModel();
         model.setRowCount(0);
-        for (int i = 0; i < tblProduct.getRowCount(); i++) { 
-              if(!tblProduct.getValueAt(i, 4).equals(0)){
-                  String id=(String)tblProduct.getValueAt(i, 0);
-                  String name=(String)tblProduct.getValueAt(i, 1);
-                  double price=(double)tblProduct.getValueAt(i, 2);
-                  int num=(int)tblProduct.getValueAt(i, 4);
+        for (int i = 0; i < tbl.getRowCount(); i++) { 
+              if(!tbl.getValueAt(i, 4).equals(0)){
+                  String id=(String)tbl.getValueAt(i, 0);
+                  String name=(String)tbl.getValueAt(i, 1);
+                  double price=(double)tbl.getValueAt(i, 2);
+                  int num=(int)tbl.getValueAt(i, 4);
                   double total=price*num;
                   model.addRow(new Object[]{id, name, price, num,total});
               }
         }        
     }
+
     private void loadServiceToTable() {
     try {
         List<Service> services=serDAO.findAll();
