@@ -93,6 +93,7 @@ public class TicketSale extends javax.swing.JFrame {
         searchBtn = new javax.swing.JButton();
         cusPanel = new javax.swing.JPanel(new GridLayout(4,2,5,5));
         wanderCheckBox = new javax.swing.JCheckBox();
+        testBtn = new javax.swing.JButton();
         servicePanel = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -199,6 +200,13 @@ public class TicketSale extends javax.swing.JFrame {
 
         wanderCheckBox.setText("Vãng lai");
 
+        testBtn.setText("jButton1");
+        testBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                testBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout ticketPanelLayout = new javax.swing.GroupLayout(ticketPanel);
         ticketPanel.setLayout(ticketPanelLayout);
         ticketPanelLayout.setHorizontalGroup(
@@ -213,8 +221,9 @@ public class TicketSale extends javax.swing.JFrame {
                     .addGroup(ticketPanelLayout.createSequentialGroup()
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(MovieComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(41, 41, 41)
+                            .addComponent(MovieComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(testBtn))
+                        .addGap(38, 38, 38)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(ShowtimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -276,7 +285,8 @@ public class TicketSale extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(searchBtn)
-                            .addComponent(wanderCheckBox))
+                            .addComponent(wanderCheckBox)
+                            .addComponent(testBtn))
                         .addGap(6, 6, 6)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
@@ -867,6 +877,10 @@ public class TicketSale extends javax.swing.JFrame {
            setTotalPrice();
         }      
     }//GEN-LAST:event_tradeBtnActionPerformed
+
+    private void testBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testBtnActionPerformed
+        JOptionPane.showMessageDialog(this,selectedShowtime.getId());
+    }//GEN-LAST:event_testBtnActionPerformed
     
     /**
      * @param args the command line arguments
@@ -1142,6 +1156,7 @@ public class TicketSale extends javax.swing.JFrame {
     private javax.swing.JPanel servicePanel;
     private javax.swing.JLabel showtimeLabel;
     private javax.swing.JTable tblProduct;
+    private javax.swing.JButton testBtn;
     private javax.swing.JLabel ticket2Label;
     private javax.swing.JLabel ticket3Label;
     private javax.swing.JLabel ticketLabel;

@@ -5,6 +5,7 @@ import entity.Movie;
 import entity.Room;
 import entity.Showtime;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -111,9 +112,11 @@ public class ShowtimeDAO {
         return null;
     }
     public Optional<Showtime> getShowtimeByStartTime(String showDate) throws SQLException, ClassNotFoundException {
-        String sql = "select * from showtime s join theater t on s.Theater_ID=t.Theater_ID where start_time=?";
+        String sql = "select * from showtime s join theater t on s.Theater_ID=t.Theater_ID where start_time=? and show_date=?";
         try (PreparedStatement pst = getConnect().prepareStatement(sql)) {
+            LocalDate today=LocalDate.now();
             pst.setString(1, showDate);
+            pst.setString(2,today.toString());
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 return Optional.of(extractShowTime(rs));
