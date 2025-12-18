@@ -9,7 +9,7 @@ package GUI;
  * @author Lenovo
  */
 import javax.swing.*;
-import cinema.Database;
+import database.Database;
 import java.sql.*;
 public class LoginGUI extends javax.swing.JFrame {
     

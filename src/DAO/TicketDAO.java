@@ -4,7 +4,7 @@
  */
 package DAO;
 
-import cinema.Database;
+import database.Database;
 import entity.Ticket;
 import java.sql.*;
 import java.time.LocalDate;

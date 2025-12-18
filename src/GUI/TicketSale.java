@@ -13,7 +13,6 @@ import DAO.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
-
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -58,8 +57,8 @@ public class TicketSale extends javax.swing.JFrame {
         invDAO=new InvoiceDAO();
         bookingSeat=new ArrayList();
         initComponents();
-        loadServiceToTable();
         loadMovie();
+        loadServiceToTable();       
     }
 
     /**
@@ -93,7 +92,6 @@ public class TicketSale extends javax.swing.JFrame {
         searchBtn = new javax.swing.JButton();
         cusPanel = new javax.swing.JPanel(new GridLayout(4,2,5,5));
         wanderCheckBox = new javax.swing.JCheckBox();
-        testBtn = new javax.swing.JButton();
         servicePanel = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -200,13 +198,6 @@ public class TicketSale extends javax.swing.JFrame {
 
         wanderCheckBox.setText("Vãng lai");
 
-        testBtn.setText("jButton1");
-        testBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                testBtnActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout ticketPanelLayout = new javax.swing.GroupLayout(ticketPanel);
         ticketPanel.setLayout(ticketPanelLayout);
         ticketPanelLayout.setHorizontalGroup(
@@ -221,9 +212,8 @@ public class TicketSale extends javax.swing.JFrame {
                     .addGroup(ticketPanelLayout.createSequentialGroup()
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(MovieComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(testBtn))
-                        .addGap(38, 38, 38)
+                            .addComponent(MovieComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(41, 41, 41)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
                             .addComponent(ShowtimeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -285,8 +275,7 @@ public class TicketSale extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(searchBtn)
-                            .addComponent(wanderCheckBox)
-                            .addComponent(testBtn))
+                            .addComponent(wanderCheckBox))
                         .addGap(6, 6, 6)
                         .addGroup(ticketPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
@@ -656,7 +645,7 @@ public class TicketSale extends javax.swing.JFrame {
             }
             bookingSeat.removeAll(bookingSeat);
             String showDate = ((String) selected).split(" - ")[0];
-            selectedShowtime=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
+            selectedShowtime=showtimeDAO.getDailyShowtimeByStartTime(showDate);
             //Room selectedRoom=roomDAO.getRoomByStartTime(showDate);
             if(selectedShowtime != null){
                  roomLabel.setText(selectedShowtime.getRoom().getId() + " - " + selectedShowtime.getRoom().getName());
@@ -802,7 +791,7 @@ public class TicketSale extends javax.swing.JFrame {
            return;
         }
         try{            
-          Customer cus=cusDAO.findByPhone(phone).orElse(null);
+          Customer cus=cusDAO.findByPhone(phone);
           if(cus==null){
            JOptionPane.showMessageDialog(this,"Khách hàng không tồn tại");
            cusPanel.removeAll();
@@ -861,6 +850,10 @@ public class TicketSale extends javax.swing.JFrame {
            JOptionPane.showMessageDialog(this,"Hãy nhập điểm");
            return;           
         }
+        if(discountPrice!=0){
+           JOptionPane.showMessageDialog(this,"Điểm chỉ đổi 1 lần");
+           return;                
+        }
         int point=Integer.parseInt(pointField.getText().trim());
         int CurrentPoint=selectedCustomer.getCusPoint();
         if(point>CurrentPoint){
@@ -877,10 +870,6 @@ public class TicketSale extends javax.swing.JFrame {
            setTotalPrice();
         }      
     }//GEN-LAST:event_tradeBtnActionPerformed
-
-    private void testBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testBtnActionPerformed
-        JOptionPane.showMessageDialog(this,selectedShowtime.getId());
-    }//GEN-LAST:event_testBtnActionPerformed
     
     /**
      * @param args the command line arguments
@@ -890,7 +879,7 @@ public class TicketSale extends javax.swing.JFrame {
         //String showDate = ((String) ShowtimeComboBox.getSelectedItem()).split(" - ")[0];
         try {            
         //    selectedShowtime=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
-            Room room=roomDAO.findById(selectedShowtime.getRoom().getId()).orElse(null);
+            Room room=roomDAO.findById(selectedShowtime.getRoom().getId());
             seatPanel.removeAll();
             seatPanel.setLayout(new java.awt.GridLayout(room.getRowNum(),room.getSeatPerRow(),5,5));
             for (int i = 0; i < room.getRowNum(); i++) {
@@ -919,31 +908,26 @@ public class TicketSale extends javax.swing.JFrame {
         }
     }
     private void pickSeat(javax.swing.JButton btn){
-     try{   
-      String showDate = ((String) ShowtimeComboBox.getSelectedItem()).split(" - ")[0];
-      Showtime show=showtimeDAO.getShowtimeByStartTime(showDate).orElse(null);
-      if (btn.getBackground().equals(defaultcolor)) {
-        btn.setBackground(Color.GREEN);
-        bookingSeat.add(btn.getText());
-        ticketPrice+=show.getShow_price();
-        totalPrice+=show.getShow_price();
-        setTicketPrice();//ticketLabel.setText(String.valueOf(ticketPrice));
-        setTotalPrice();//totalLabel.setText(String.valueOf(totalPrice));
-        //txtSelectedSeats.append(btn.getText() + " ");
-      }
-      else if (btn.getBackground().equals(Color.GREEN)) {
-        btn.setBackground(defaultcolor);
-        bookingSeat.remove(btn.getText());
-        ticketPrice-=show.getShow_price();
-        totalPrice-=show.getShow_price();
-        setTotalPrice();//ticketLabel.setText(String.valueOf(ticketPrice));     
-        setTicketPrice();//totalLabel.setText(String.valueOf(totalPrice));        
-        //String ghe = btn.getText() + " ";
-        //txtSelectedSeats.setText(
-         //   txtSelectedSeats.getText().replace(ghe, "")
-        //);
-      }}catch(SQLException | ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());
+        if (btn.getBackground().equals(defaultcolor)) {
+            btn.setBackground(Color.GREEN);
+            bookingSeat.add(btn.getText());
+            ticketPrice+=selectedShowtime.getShow_price();
+            totalPrice+=selectedShowtime.getShow_price();
+            setTicketPrice();//ticketLabel.setText(String.valueOf(ticketPrice));
+            setTotalPrice();//totalLabel.setText(String.valueOf(totalPrice));
+            //txtSelectedSeats.append(btn.getText() + " ");
+        }
+        else if (btn.getBackground().equals(Color.GREEN)) {
+            btn.setBackground(defaultcolor);
+            bookingSeat.remove(btn.getText());
+            ticketPrice-=selectedShowtime.getShow_price();
+            totalPrice-=selectedShowtime.getShow_price();
+            setTotalPrice();//ticketLabel.setText(String.valueOf(ticketPrice));
+            setTicketPrice();//totalLabel.setText(String.valueOf(totalPrice));
+            //String ghe = btn.getText() + " ";
+            //txtSelectedSeats.setText(
+            //   txtSelectedSeats.getText().replace(ghe, "")
+            //);
         }
     }
     private void clear(){
@@ -954,6 +938,7 @@ public class TicketSale extends javax.swing.JFrame {
         setTicketPrice();//ticketLabel.setText(String.valueOf(ticketPrice));
         setServicePrice();//serviceLabel.setText(String.valueOf(servicePrice));
         setTotalPrice();//totalLabel.setText(String.valueOf(totalPrice));
+        wanderCheckBox.setSelected(false);
         phoneNumField.setText("");
         cusPanel.removeAll();
     }
@@ -969,13 +954,9 @@ public class TicketSale extends javax.swing.JFrame {
     private void loadMovie(){
         try {
             MovieComboBox.removeAllItems();
-            List<Object[]> results = movieDAO.findMovieByShowtime();
-            DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) MovieComboBox.getModel();
+            List<Object[]> results = movieDAO.findDailyMovieByShowtime();
             LocalDate date=LocalDate.now();       
             for (Object[] obj : results) {
-               if(model.getIndexOf(obj[0] + " - " + obj[1])!=-1){ 
-                  continue;
-               }
                if(obj[2].equals(date)){ 
                   MovieComboBox.addItem(obj[0] + " - " + obj[1]);
                 }
@@ -1156,7 +1137,6 @@ public class TicketSale extends javax.swing.JFrame {
     private javax.swing.JPanel servicePanel;
     private javax.swing.JLabel showtimeLabel;
     private javax.swing.JTable tblProduct;
-    private javax.swing.JButton testBtn;
     private javax.swing.JLabel ticket2Label;
     private javax.swing.JLabel ticket3Label;
     private javax.swing.JLabel ticketLabel;

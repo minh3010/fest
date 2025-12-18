@@ -19,6 +19,7 @@ import java.awt.HeadlessException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -246,8 +247,8 @@ public class ShowtimeGUI extends javax.swing.JFrame {
             String movieId = ((String) MovieComboBox.getSelectedItem()).split(" - ")[0];
             String roomId = ((String) RoomComboBox.getSelectedItem()).split(" - ")[0];
             
-            Movie movie = movieDAO.findById(movieId).orElse(null);
-            Room room = roomDAO.findById(roomId).orElse(null);
+            Movie movie = movieDAO.findById(movieId);
+            Room room = roomDAO.findById(roomId);
             
             if (movie == null || room == null) {
                 JOptionPane.showMessageDialog(this, "Phim hoặc phòng không tồn tại!");
@@ -285,8 +286,8 @@ public class ShowtimeGUI extends javax.swing.JFrame {
             String movieId = ((String) MovieComboBox.getSelectedItem()).split(" - ")[0];
             String roomId = ((String) RoomComboBox.getSelectedItem()).split(" - ")[0];
             
-            Movie movie = movieDAO.findById(movieId).orElse(null);
-            Room room = roomDAO.findById(roomId).orElse(null);
+            Movie movie = movieDAO.findById(movieId);
+            Room room = roomDAO.findById(roomId);
             
             if (movie == null || room == null) {
                 JOptionPane.showMessageDialog(this, "Phim hoặc phòng không tồn tại!");
@@ -294,13 +295,13 @@ public class ShowtimeGUI extends javax.swing.JFrame {
             }
             DateTimeFormatter formatDate = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             DateTimeFormatter formatTime = DateTimeFormatter.ofPattern("HH:MM");            
-            LocalDate date = LocalDate.parse(dateField.getText().trim(), formatDate);
+            LocalDate Showdate = LocalDate.parse(dateField.getText().trim(), formatDate);
             LocalTime startTime = LocalTime.parse(timeField.getText().trim(), formatTime);        
             Showtime showTime = new Showtime(
                 idField.getText().trim(),
                 movie,
                 room,
-                date,    
+                Showdate,    
                 startTime,
                 Double.valueOf(priceField.getText().trim())
             );       
@@ -310,7 +311,9 @@ public class ShowtimeGUI extends javax.swing.JFrame {
             ClearForm();
           } catch (SQLException | ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(this,"Lỗi cập nhật");
-        }
+          } catch(DateTimeParseException ex){
+            JOptionPane.showMessageDialog(this,"Lỗi định dạng ngày giờ");
+          }
     }//GEN-LAST:event_editBtnActionPerformed
 
     private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
@@ -395,7 +398,7 @@ public class ShowtimeGUI extends javax.swing.JFrame {
             timeField.setText(time);
             priceField.setText(String.valueOf(model.getValueAt(selectedRow,5)));
             try {
-                Showtime show = showtimeDAO.getShowtimeById(idField.getText()).orElse(null);
+                Showtime show = showtimeDAO.getShowtimeById(idField.getText());
                 if (show != null) {         
                     MovieComboBox.setSelectedItem(show.getMovie().getId() + " - " + show.getMovie().getTitle());
                     RoomComboBox.setSelectedItem(show.getRoom().getId() + " - " + show.getRoom().getName());

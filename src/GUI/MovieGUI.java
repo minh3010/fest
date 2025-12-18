@@ -9,7 +9,6 @@ package GUI;
  * @author Lenovo
  */
 import java.sql.*;
-import cinema.Database;
 import DAO.MovieDAO;
 import entity.Movie;
 import java.util.List;
@@ -332,7 +331,7 @@ public class MovieGUI extends javax.swing.JFrame {
             String duration=String.valueOf(model.getValueAt(selectedRow, 4)) ;
             durationField.setText(duration);           
             try {
-                Movie movie = movieDAO.findById(IdField.getText()).orElse(null);
+                Movie movie = movieDAO.findById(IdField.getText());
                 if (movie != null) {         
                     ShowingCheckBox.setSelected(movie.isShowing());
                 }

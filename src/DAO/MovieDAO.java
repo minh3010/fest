@@ -8,12 +8,11 @@ package DAO;
  *
  * @author Lenovo
  */
-import cinema.Database;
+import database.Database;
 import entity.Movie;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 public class MovieDAO {
     private Connection getConnect() throws ClassNotFoundException, SQLException{
        return Database.getDB().connect();
@@ -68,28 +67,28 @@ public class MovieDAO {
         }
         return movies;
     }
-    public List<Object[]> findMovieByShowtime() throws SQLException, ClassNotFoundException {
+    public List<Object[]> findDailyMovieByShowtime() throws SQLException, ClassNotFoundException {
         List<Object[]> results=new ArrayList<>();
-        String sql = "select m.Mov_ID,Mov_title,Show_date from movie m join showtime s on m.Mov_ID=s.Mov_ID";
+        String sql = "select distinct m.Mov_ID,Mov_title,Show_date from movie m join showtime s on m.Mov_ID=s.Mov_ID where show_date=curdate()";
         try (Statement stmt = getConnect().createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)) {                      
             while (rs.next()) {
                   results.add(new Object[]{rs.getString("mov_id"),rs.getString("mov_title"),rs.getDate("Show_date").toLocalDate()});
             }
         }
         return results;
     }     
-    public Optional<Movie> findById(String id) throws SQLException, ClassNotFoundException {
+    public Movie findById(String id) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM movie WHERE mov_id=?";
         try (PreparedStatement stmt = getConnect().prepareStatement(sql)) {
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Movie movie = extractMovie(rs);
-                return Optional.of(movie);
+                return movie;
             }
         }
-        return Optional.empty();
+        return null;
     }   
     private Movie extractMovie(ResultSet rs) throws SQLException {
         return new Movie(

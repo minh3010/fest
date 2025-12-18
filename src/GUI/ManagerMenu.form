@@ -64,6 +64,7 @@
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="showtimeBtn" pref="102" max="32767" attributes="0"/>
                               <Component id="customerBtn" max="32767" attributes="0"/>
+                              <Component id="invStatBtn" alignment="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace pref="74" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -97,7 +98,10 @@
                       <Component id="reportBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
-                  <Component id="empBtn" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="empBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="invStatBtn" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <EmptySpace pref="42" max="32767" attributes="0"/>
               </Group>
           </Group>
@@ -174,6 +178,14 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="empBtnActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="invStatBtn">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="H&#xf3;a &#x111;&#x1a1;n"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="invStatBtnActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

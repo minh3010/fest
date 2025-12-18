@@ -1,11 +1,10 @@
 package DAO;
 
-import cinema.Database;
+import database.Database;
 import entity.Movie;
 import entity.Room;
 import entity.Showtime;
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -100,26 +99,24 @@ public class ShowtimeDAO {
         return showtimes;
     }
     // Tìm suất chiếu theo ID
-    public Optional<Showtime> getShowtimeById(String showId) throws SQLException, ClassNotFoundException {
+    public Showtime getShowtimeById(String showId) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM showtime WHERE Show_ID=?";
         try (PreparedStatement pst = getConnect().prepareStatement(sql)) {
             pst.setString(1, showId);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                return Optional.of(extractShowTime(rs));
+                return extractShowTime(rs);
             }
         }
         return null;
     }
-    public Optional<Showtime> getShowtimeByStartTime(String showDate) throws SQLException, ClassNotFoundException {
-        String sql = "select * from showtime s join theater t on s.Theater_ID=t.Theater_ID where start_time=? and show_date=?";
+    public Showtime getDailyShowtimeByStartTime(String showDate) throws SQLException, ClassNotFoundException {
+        String sql = "select * from showtime s join theater t on s.Theater_ID=t.Theater_ID where start_time=? and show_date=curdate()";
         try (PreparedStatement pst = getConnect().prepareStatement(sql)) {
-            LocalDate today=LocalDate.now();
             pst.setString(1, showDate);
-            pst.setString(2,today.toString());
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                return Optional.of(extractShowTime(rs));
+                return extractShowTime(rs);
             }
         }
         return null;
@@ -148,17 +145,17 @@ public class ShowtimeDAO {
         String movieId = rs.getString("mov_id");
         String roomId = rs.getString("theater_id");
         
-        Optional<Movie> movieOpt = movieDAO.findById(movieId);
-        Optional<Room> roomOpt = roomDAO.findById(roomId);
+        Movie movieOpt = movieDAO.findById(movieId);
+        Room roomOpt = roomDAO.findById(roomId);
         
-        if (!movieOpt.isPresent() || !roomOpt.isPresent()) {
+        if (movieOpt==null || roomOpt==null) {
             throw new SQLException("không tồn tại phim hoặc phòng");
         }
         
         Showtime showTime = new Showtime(
             rs.getString("show_id"),
-            movieOpt.get(),
-            roomOpt.get(),
+            movieOpt,
+            roomOpt,
             rs.getDate("show_date").toLocalDate(),    
             rs.getTime("start_time").toLocalTime(),
             rs.getDouble("show_price")

@@ -4,7 +4,6 @@
  */
 package GUI;
 
-import cinema.Database;
 import DAO.ServiceDAO;
 import entity.Service;
 import java.sql.*;
@@ -222,7 +221,7 @@ public class ServiceGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,"Thêm thành công");
             getTable();
             ClearForm();
-        } catch (SQLException | ClassNotFoundException ex) {
+        } catch (SQLException | NumberFormatException | ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(this,"Lỗi thêm dịch vụ:"+ex.getMessage());
         }     
     }//GEN-LAST:event_addBtnActionPerformed
@@ -239,7 +238,7 @@ public class ServiceGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,"Cập nhật thành công");
             getTable();
             ClearForm();
-        } catch (SQLException | ClassNotFoundException ex) {
+        } catch (SQLException |NumberFormatException | ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(this,"Lỗi cập nhật dịch vụ:"+ex.getMessage());
         } 
     }//GEN-LAST:event_editBtnActionPerformed

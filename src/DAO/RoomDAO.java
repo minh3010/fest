@@ -8,12 +8,11 @@ package DAO;
  *
  * @author Lenovo
  */
-import cinema.Database;
+import database.Database;
 import java.sql.*;
 import entity.Room;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 public class RoomDAO {
     private Connection getConnect() throws ClassNotFoundException, SQLException{
        return Database.getDB().connect();
@@ -47,16 +46,16 @@ public class RoomDAO {
             pst.executeUpdate();
         }
     }
-    public Optional<Room> findById(String id) throws SQLException, ClassNotFoundException {
+    public Room findById(String id) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM theater WHERE theater_id=?";
         try (PreparedStatement stmt = getConnect().prepareStatement(sql)) {
             stmt.setString(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return Optional.of(extractRoom(rs));
+                return extractRoom(rs);
             }
         }
-        return Optional.empty();
+        return null;
     }
     public Room getRoomByStartTime(String date) throws SQLException, ClassNotFoundException{
         String sql = "select * from theater t join showtime s on s.Theater_ID=t.Theater_ID where start_time=?";

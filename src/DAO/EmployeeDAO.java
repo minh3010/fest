@@ -4,7 +4,7 @@
  */
 package DAO;
 
-import cinema.Database;
+import database.Database;
 import entity.Employee;
 import java.sql.*;
 import java.util.ArrayList;

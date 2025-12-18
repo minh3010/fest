@@ -10,11 +10,9 @@ package GUI;
  */
 import DAO.RoomDAO;
 import entity.Room;
-import cinema.Database;
 import java.awt.HeadlessException;
 import java.sql.*;
 import java.util.List;
-import java.util.stream.IntStream;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 public class RoomGUI extends javax.swing.JFrame {
@@ -354,7 +352,7 @@ public class RoomGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this,"Thêm thành công");
             getRoom();
             ClearForm();
-        } catch (SQLException | ClassNotFoundException ex) {
+        } catch (SQLException | NumberFormatException |ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(this,"Lỗi thêm phòng");
         }
     }//GEN-LAST:event_addBtnActionPerformed
@@ -362,7 +360,7 @@ public class RoomGUI extends javax.swing.JFrame {
     private void RoomComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RoomComboBoxActionPerformed
           String name=(String)RoomComboBox.getSelectedItem();          
        try{
-          Room room=roomDAO.findById(name).orElse(null);
+          Room room=roomDAO.findById(name);
           roomModel=(DefaultTableModel)TableSeat.getModel();
           roomModel.setRowCount(0);
           roomModel.setColumnCount(0);
@@ -388,7 +386,7 @@ public class RoomGUI extends javax.swing.JFrame {
             IdField.setText((String) model.getValueAt(selectedRow, 0));
             NameField.setText((String) model.getValueAt(selectedRow, 1));          
             try {
-                Room room = roomDAO.findById(IdField.getText()).orElse(null);
+                Room room = roomDAO.findById(IdField.getText());
                 if (room != null) {
                     RowField.setText(String.valueOf(room.getRowNum()));
                     SeatPerRowField.setText(String.valueOf(room.getSeatPerRow()));

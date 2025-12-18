@@ -35,7 +35,6 @@ public class EmployeeMenu extends javax.swing.JFrame {
         displayName = new javax.swing.JLabel();
         logoutBtn = new javax.swing.JButton();
         customerBtn = new javax.swing.JButton();
-        reportBtn = new javax.swing.JButton();
         ticketBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -57,13 +56,6 @@ public class EmployeeMenu extends javax.swing.JFrame {
             }
         });
 
-        reportBtn.setText("Thống kê hóa đơn");
-        reportBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                reportBtnActionPerformed(evt);
-            }
-        });
-
         ticketBtn.setText("Bán vé");
         ticketBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -78,14 +70,13 @@ public class EmployeeMenu extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(106, 106, 106)
-                        .addComponent(customerBtn)
-                        .addGap(55, 55, 55)
-                        .addComponent(reportBtn))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(79, 79, 79)
-                        .addComponent(displayName)))
-                .addGap(55, 55, 55)
+                        .addComponent(displayName)
+                        .addGap(296, 296, 296))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(customerBtn)
+                        .addGap(84, 84, 84)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(ticketBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(logoutBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE))
@@ -101,7 +92,6 @@ public class EmployeeMenu extends javax.swing.JFrame {
                 .addGap(33, 33, 33)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(customerBtn)
-                    .addComponent(reportBtn)
                     .addComponent(ticketBtn))
                 .addContainerGap(154, Short.MAX_VALUE))
         );
@@ -139,10 +129,6 @@ public class EmployeeMenu extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new TicketSale().setVisible(true));
     }//GEN-LAST:event_ticketBtnActionPerformed
 
-    private void reportBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reportBtnActionPerformed
-        java.awt.EventQueue.invokeLater(() -> new InvoiceStatistics().setVisible(true));
-    }//GEN-LAST:event_reportBtnActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -173,7 +159,6 @@ public class EmployeeMenu extends javax.swing.JFrame {
     private javax.swing.JLabel displayName;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton logoutBtn;
-    private javax.swing.JButton reportBtn;
     private javax.swing.JButton ticketBtn;
     // End of variables declaration//GEN-END:variables
 }

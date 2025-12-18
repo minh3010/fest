@@ -4,12 +4,11 @@
  */
 package DAO;
 
-import cinema.Database;
+import database.Database;
 import entity.Customer;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import javax.swing.JOptionPane;
 
 public class CustomerDAO {
@@ -100,29 +99,29 @@ public class CustomerDAO {
             return false;
         }
     }
-    public Optional<Customer> findByPhone(String phone) throws SQLException, ClassNotFoundException {
+    public Customer findByPhone(String phone) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM customer WHERE cus_phone=?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, phone);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return Optional.of(extractCustomer(rs));
+                return extractCustomer(rs);
             }
         }
-        return Optional.empty();
+        return null;
     } 
-    public Optional<Customer> findById(String id) throws SQLException, ClassNotFoundException {
+    public Customer findById(String id) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM customer WHERE cus_id=?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return Optional.of(extractCustomer(rs));
+                return extractCustomer(rs);
             }
         }
-        return Optional.empty();
+        return null;
     }      
     public List<Customer> searchByPhone(String keyword) throws SQLException, ClassNotFoundException {
         List<Customer> list = new ArrayList<>();

@@ -3,13 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package DAO;
-import cinema.Database;
+import database.Database;
 import entity.Customer;
 import entity.Invoice;
 import entity.InvoiceService;
 import java.sql.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -167,7 +166,7 @@ public class InvoiceDAO {
     private Invoice extractInvoice(ResultSet rs) throws SQLException, ClassNotFoundException {
         Invoice inv=new Invoice();
         CustomerDAO cusDAO=new CustomerDAO();
-        Customer cus=cusDAO.findById(rs.getString("cus_id")).orElse(null);
+        Customer cus=cusDAO.findById(rs.getString("cus_id"));
         inv.setId(rs.getString("inv_id"));
         inv.setCustomer(cus);
         inv.setDate(rs.getTimestamp("inv_date"));

@@ -42,6 +42,7 @@ public class ManagerMenu extends javax.swing.JFrame {
         customerBtn = new javax.swing.JButton();
         reportBtn = new javax.swing.JButton();
         empBtn = new javax.swing.JButton();
+        invStatBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -104,6 +105,13 @@ public class ManagerMenu extends javax.swing.JFrame {
             }
         });
 
+        invStatBtn.setText("Hóa đơn");
+        invStatBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                invStatBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -123,7 +131,8 @@ public class ManagerMenu extends javax.swing.JFrame {
                         .addGap(72, 72, 72)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(showtimeBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
-                            .addComponent(customerBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(customerBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(invStatBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(roomBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -148,7 +157,9 @@ public class ManagerMenu extends javax.swing.JFrame {
                     .addComponent(customerBtn)
                     .addComponent(reportBtn))
                 .addGap(37, 37, 37)
-                .addComponent(empBtn)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(empBtn)
+                    .addComponent(invStatBtn))
                 .addContainerGap(42, Short.MAX_VALUE))
         );
 
@@ -207,6 +218,10 @@ public class ManagerMenu extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new EmployeeGUI().setVisible(true));
     }//GEN-LAST:event_empBtnActionPerformed
 
+    private void invStatBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_invStatBtnActionPerformed
+        java.awt.EventQueue.invokeLater(() -> new InvoiceStatistics().setVisible(true));
+    }//GEN-LAST:event_invStatBtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -236,6 +251,7 @@ public class ManagerMenu extends javax.swing.JFrame {
     private javax.swing.JButton customerBtn;
     private javax.swing.JLabel displayName;
     private javax.swing.JButton empBtn;
+    private javax.swing.JButton invStatBtn;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JButton logoutBtn;
     private javax.swing.JButton movieBtn;
