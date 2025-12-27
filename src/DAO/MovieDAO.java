@@ -73,7 +73,7 @@ public class MovieDAO {
         try (Statement stmt = getConnect().createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {                      
             while (rs.next()) {
-                  results.add(new Object[]{rs.getString("mov_id"),rs.getString("mov_title"),rs.getDate("Show_date").toLocalDate()});
+                  results.add(new Object[]{rs.getString("mov_id"),rs.getString("mov_title")});
             }
         }
         return results;

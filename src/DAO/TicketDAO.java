@@ -21,8 +21,10 @@ public class TicketDAO {
     public String generateId() throws ClassNotFoundException, SQLException{
           LocalDate now=LocalDate.now();
           DateTimeFormatter format=DateTimeFormatter.ofPattern("yyMMdd");
-          String sql="select max(ticket_id) from ticket";
-          try(PreparedStatement pst = getConnect().prepareStatement(sql)){  
+          String dateNow=now.format(format);
+          String sql="select max(ticket_id) from ticket where ticket_id like ?";
+          try(PreparedStatement pst = getConnect().prepareStatement(sql)){
+              pst.setString(1,"%"+dateNow+"%");
               ResultSet rs=pst.executeQuery();
               rs.next();
               if(rs.getString("max(ticket_id)")==null){

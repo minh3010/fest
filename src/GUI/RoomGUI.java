@@ -19,7 +19,7 @@ public class RoomGUI extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(RoomGUI.class.getName());
     private final RoomDAO roomDAO;
-    private DefaultTableModel model,roomModel;
+    private DefaultTableModel model;
     /**
      * Creates new form RoomGUI
      */
@@ -361,19 +361,19 @@ public class RoomGUI extends javax.swing.JFrame {
           String name=(String)RoomComboBox.getSelectedItem();          
        try{
           Room room=roomDAO.findById(name);
-          roomModel=(DefaultTableModel)TableSeat.getModel();
-          roomModel.setRowCount(0);
-          roomModel.setColumnCount(0);
+          model=(DefaultTableModel)TableSeat.getModel();
+          model.setRowCount(0);
+          model.setColumnCount(0);
           if(room != null){  
           for (int j = 0; j < room.getSeatPerRow(); j++) {
-            roomModel.addColumn(String.valueOf((char) ('A' + j)));
+              model.addColumn(j+1);
           }
           for(int i=0;i<room.getRowNum();i++){
                 Object[] row=new Object[room.getSeatPerRow()];
                 for(int j=0;j<room.getSeatPerRow();j++){               
-                    row[j]=(char)('A'+j)+String.valueOf(1+i);              
+                    row[j]=(char)('A'+i)+String.valueOf(1+j);              
                 }
-                roomModel.addRow(row); 
+                model.addRow(row); 
             }}                      
        }catch(SQLException | ClassNotFoundException ex){
           JOptionPane.showMessageDialog(this,"Lỗi"+ex.getMessage());

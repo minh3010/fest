@@ -16,7 +16,22 @@ public class CustomerDAO {
     private Connection getConnection() throws SQLException, ClassNotFoundException {
         return Database.getDB().connect();
     }
-
+    public String generateId() throws ClassNotFoundException, SQLException{
+          String sql="select max(cus_id) from customer";
+          try(PreparedStatement pst = getConnection().prepareStatement(sql)){
+              ResultSet rs=pst.executeQuery();
+              rs.next();
+              if(rs.getString("max(cus_id)")==null){
+                  return "C001";
+              }
+              else{
+                long id=Long.parseLong(rs.getString("max(cus_id)").substring(1,rs.getString("max(cus_id)").length()));
+                id++;
+                return "C"+String.format("%03d",id);
+              }
+              
+          }                 
+    }
     public List<Customer> getAllCustomers() throws SQLException, ClassNotFoundException {
         List<Customer> list = new ArrayList<>();
         String sql = "SELECT * FROM Customer";

@@ -271,8 +271,7 @@ public class ShowtimeGUI extends javax.swing.JFrame {
             getTable();
             ClearForm();
         }catch(SQLException | ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(this,"Lỗi thêm suất chiếu");
-            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,"Lỗi thêm suất chiếu");           
         }
     }//GEN-LAST:event_addBtnActionPerformed
 
