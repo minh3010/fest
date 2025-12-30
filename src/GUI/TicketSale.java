@@ -702,12 +702,7 @@ public class TicketSale extends javax.swing.JFrame {
         loadInvService(tblProduct);
         StringBuilder sb = new StringBuilder();
         for (String s : bookingSeat) {
-            if(bookingSeat.size()>1){
-             sb.append(s).append(" ");
-            }
-            else{
-             sb.append(s);
-            }
+             sb.append(s).append(" ");          
         }   
         try {
             invIdLabel.setText("Mã hóa đơn:"+invDAO.generateId());

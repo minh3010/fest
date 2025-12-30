@@ -129,6 +129,12 @@ public class EmployeeGUI extends javax.swing.JFrame {
 
         jLabel6.setText("Tên đăng nhập");
 
+        usernameField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usernameFieldActionPerformed(evt);
+            }
+        });
+
         RoleComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "quan ly", "nhan vien" }));
 
         jLabel7.setText("Chức vụ");
@@ -262,7 +268,11 @@ public class EmployeeGUI extends javax.swing.JFrame {
                 passwordField.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Hãy nhập đủ thông tin ");
                 return;
-            }       
+            }
+            if(empDAO.DuplicateUsername(usernameField.getText())){
+                JOptionPane.showMessageDialog(this,"Trùng tên đăng nhập");  
+                return;
+            }
             Employee emp = new Employee(
                 idField.getText().trim(),
                 nameField.getText().trim(),
@@ -291,7 +301,11 @@ public class EmployeeGUI extends javax.swing.JFrame {
                 passwordField.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Hãy nhập đủ thông tin ");
                 return;
-            }       
+            }
+            if(empDAO.DuplicateUsername(usernameField.getText())){
+                JOptionPane.showMessageDialog(this,"Trùng tên đăng nhập");  
+                return;
+            }
             Employee emp = new Employee(
                 idField.getText().trim(),
                 nameField.getText().trim(),
@@ -329,6 +343,10 @@ public class EmployeeGUI extends javax.swing.JFrame {
             }
         }          
     }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void usernameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameFieldActionPerformed
+
+    }//GEN-LAST:event_usernameFieldActionPerformed
     private void loadSelected(){
         int selectedRow = empTable.getSelectedRow();
         if (selectedRow != -1) {

@@ -18,8 +18,29 @@ public class EmployeeDAO {
     private Connection getConnect() throws ClassNotFoundException, SQLException {
         return Database.getDB().connect();
     }
-    public EmployeeDAO(){ 
-        
+    public EmployeeDAO(){}
+    public Employee Login(String username,String password) throws ClassNotFoundException, SQLException{
+        String sql="select * from employee where emp_username=? and emp_password=?";
+        try (PreparedStatement pst = getConnect().prepareStatement(sql)) {
+            pst.setString(1, username);
+            pst.setString(2, password);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return extractEmployee(rs);
+            }
+        }        
+        return null;
+    }
+    public boolean DuplicateUsername(String username) throws ClassNotFoundException, SQLException{
+        String sql="select * from employee where emp_username=?";
+        try (PreparedStatement pst = getConnect().prepareStatement(sql)) {
+            pst.setString(1, username);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+        }        
+        return false;        
     }
     public List<Employee> getEmployee() throws ClassNotFoundException, SQLException{
         List<Employee> employees = new ArrayList<>();

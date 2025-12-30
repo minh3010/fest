@@ -8,18 +8,20 @@ package GUI;
  *
  * @author Lenovo
  */
+import DAO.EmployeeDAO;
 import javax.swing.*;
-import database.Database;
+import entity.Employee;
 import java.sql.*;
 public class LoginGUI extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginGUI.class.getName());
-
+    private EmployeeDAO empDAO;
     /**
      * Creates new form LoginGUI
      */
     public LoginGUI() {
-        initComponents();
+        empDAO=new EmployeeDAO();
+        initComponents();        
     }
 
     /**
@@ -151,32 +153,23 @@ public class LoginGUI extends javax.swing.JFrame {
             return;           
         }
         try{
-            Connection con=Database.getDB().connect();
-            String sql="select * from employee where emp_username=? and emp_password=?";
-            PreparedStatement pst=con.prepareStatement(sql);
-            pst.setString(1,username);
-            pst.setString(2,password);
-            ResultSet rs=pst.executeQuery();
-            if(rs.next()){
-               String name=rs.getString("emp_name");
-               String role=rs.getString("emp_role");
-               if("quan ly".equals(role)){
-                 java.awt.EventQueue.invokeLater(() -> {
-                   new ManagerMenu(name).setVisible(true);
-                   setVisible(false);
-                 });
-               }
-               else{
-                  java.awt.EventQueue.invokeLater(() -> new EmployeeMenu(name).setVisible(true));
+            Employee emp=empDAO.Login(username, password);
+            if(emp != null){
+               if("quan ly".equals(emp.getRole())){
+                  java.awt.EventQueue.invokeLater(() -> new ManagerMenu(emp.getName()).setVisible(true));
                   setVisible(false);
                }
-               //JOptionPane.showMessageDialog(this,name);
+               else{
+                  java.awt.EventQueue.invokeLater(() -> new EmployeeMenu(emp.getName()).setVisible(true));
+                  setVisible(false);
+               }
             }
             else{
                JOptionPane.showMessageDialog(this,"Tên đăng nhập hoặc mật khẩu không đúng");
                
             }
         }catch(SQLException | ClassNotFoundException ex){
+            JOptionPane.showMessageDialog(this,"Lỗi:"+ex.getMessage());
         }
     }//GEN-LAST:event_Login
 
